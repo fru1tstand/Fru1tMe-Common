@@ -1,6 +1,5 @@
 <?php
 namespace common\base;
-
 use common\data\Session;
 use common\milk\inject\Injector;
 
@@ -42,11 +41,8 @@ abstract class BaseAutoload {
 		self::$injector = $autoload->getMilkInjector();
 
 		// Set up session
-		/** @var BaseSettings $settings */
-		$settings = self::getInjector()->getInstance(BaseSettings::class);
-		Session::start($settings->getWebSessionName());
+		Session::start(BaseSettings::SESSION_NAME);
 	}
-
 
 	// Getters
 	/**
@@ -56,14 +52,6 @@ abstract class BaseAutoload {
 	public static function getInjector() {
 		return self::$injector;
 	}
-
-
-	// Implementor methods
-	/**
-	 * Returns the php source path for the website
-	 * @return string
-	 */
-	public abstract function getPhpSourcePath();
 
 	/**
 	 * Returns injector associated to the website
