@@ -1,5 +1,5 @@
 <?php
-namespace common\template;
+namespace common\base;
 
 /**
  * Class PageHandler
