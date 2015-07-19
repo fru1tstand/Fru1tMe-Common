@@ -1,8 +1,17 @@
 <?php
 namespace common\base;
 
-abstract class BaseSettings {
-	public const SESSION_NAME = "Fru1tMe";
+/**
+ * Class Settings
+ * @package common\base
+ *
+ * Defines the basic settings for an FM website
+ */
+abstract class Settings {
+	/**
+	 * Name of the php web session
+	 */
+	const SESSION_NAME = "Fru1tMe";
 
 	/**
 	 * Determines if debugging is enabled. Mainly used for debug messages, but also has some

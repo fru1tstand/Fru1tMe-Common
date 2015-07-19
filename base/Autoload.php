@@ -7,30 +7,30 @@ use common\milk\inject\Injector;
  * Class BaseAutoload
  * @package common\base
  */
-abstract class BaseAutoload {
+abstract class Autoload {
 	/* @var Injector */
 	private static $injector = null;
 
 	/**
 	 * Initializes the website.
 	 * Sets up auto-loading, milk injector, and session.
-	 * @param BaseAutoload $autoload
+	 * @param Autoload $autoload
 	 */
-	public static function init(BaseAutoload $autoload) {
+	public static function init(Autoload $autoload) {
 		// Set up auto-loading
 		spl_autoload_register(function ($className) use ($autoload) {
 			// Replace namespace backslashes with folder directory forward slashes
 			$className = str_replace("\\", "/", $className);
 
 			// Normal PHP path
-			$path = $autoload->getPhpSourcePath() . "/" . $className . ".php";
+			$path = dirname(__FILE__) . "/../../" . $className . ".php";
 			if (file_exists($path)) {
 				/** @noinspection PhpIncludeInspection */
 				include_once($path);
 			}
 
 			// PHPTests path
-			$path = $autoload->getPhpSourcePath() . "tests/" . $className . ".php";
+			$path = dirname(__FILE__) . "/../../tests/" . $className . ".php";
 			if (file_exists($path)) {
 				/** @noinspection PhpIncludeInspection */
 				include_once($path);
@@ -41,7 +41,7 @@ abstract class BaseAutoload {
 		self::$injector = $autoload->getMilkInjector();
 
 		// Set up session
-		Session::start(BaseSettings::SESSION_NAME);
+		Session::start(Settings::SESSION_NAME);
 	}
 
 	// Getters
