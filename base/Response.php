@@ -42,15 +42,24 @@ class Response {
     }
 
     /**
-     * Checks if the any of the responses are errors. If so, the response is deemed a failure and
+     * Checks if any of the responses are errors. If so, the response is deemed a failure and
      * this function will return true.
-     * @return bool
+     * @return bool True on fail. Otherwise, false.
+	 * @deprecated Use {@link didPass} instead.
      */
     public function hasFailed() {
         return !is_array($this->messageTypes)
                 && !is_array($this->messageTypes[self::TYPE_ERROR])
                 && count($this->messageTypes[self::TYPE_ERROR]) > 0;
     }
+
+	/**
+	 * Checks if no errors were recorded in the response. If there were none, the response passed.
+	 * @return bool True on success. Otherwise, false.
+	 */
+	public function didPass() {
+		return !$this->hasFailed();
+	}
 
     /**
      * Gets all error messages from the response. Returns an empty array if none exist. Be sure
