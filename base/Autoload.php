@@ -1,61 +1,35 @@
 <?php
 namespace common\base;
-use common\data\Session;
-use common\milk\inject\Injector;
 
 /**
- * Class BaseAutoload
- * @package common\base
+ * Provides convenience methods for using the spl_autoload feature within PHP.
  */
-abstract class Autoload {
-	/* @var Injector */
-	private static $injector = null;
-
+class Autoload {
 	/**
-	 * Initializes the website.
-	 * Sets up auto-loading, milk injector, and session.
-	 * @param Autoload $autoload
+	 * Sets up the spl autoload feature within PHP.
+	 *
+	 * @param String $phpPath The path of where PHP files are kept.
+	 * @param Boolean $enableTests Should include test files for autoloading
 	 */
-	public static function init(Autoload $autoload) {
+	public static function setup($phpPath, $enableTests) {
 		// Set up auto-loading
-		spl_autoload_register(function ($className) use ($autoload) {
+		spl_autoload_register(function ($className) use ($phpPath, $enableTests) {
 			// Replace namespace backslashes with folder directory forward slashes
 			$className = str_replace("\\", "/", $className);
 
 			// Normal PHP path
-			$path = dirname(__FILE__) . "/../../" . $className . ".php";
+			$path = $phpPath . "/" . $className . ".php";
 			if (file_exists($path)) {
 				/** @noinspection PhpIncludeInspection */
 				include_once($path);
 			}
 
 			// PHPTests path
-			$path = dirname(__FILE__) . "/../../tests/" . $className . ".php";
-			if (file_exists($path)) {
+			$path = $phpPath . "tests/" . $className . ".php";
+			if ($enableTests && file_exists($path)) {
 				/** @noinspection PhpIncludeInspection */
 				include_once($path);
 			}
 		});
-
-		// Set up Milk
-		self::$injector = $autoload->getMilkInjector();
-
-		// Set up session
-		Session::start(Settings::SESSION_NAME);
 	}
-
-	// Getters
-	/**
-	 * Gets the milk injector
-	 * @return Injector
-	 */
-	public static function getInjector() {
-		return self::$injector;
-	}
-
-	/**
-	 * Returns injector associated to the website
-	 * @return Injector
-	 */
-	protected abstract function getMilkInjector();
 }
