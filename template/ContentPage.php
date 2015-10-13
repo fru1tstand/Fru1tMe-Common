@@ -1,30 +1,84 @@
 <?php
 namespace common\template;
-use common\base\Response;
+require_once $_SERVER['DOCUMENT_ROOT'] . '/.site/php/fru1tme/Setup.php';
 
 /**
- * Defines a template content page.
- * The structure for templating using this file is as follows
- * 	- Master Page (index/home/other root template name)
- * 		- Content Page
- * 			- Page Processor
- * 			- Page Content
- * 				- Sub-divided page content ad infinitum
- * @package common\template
+ * Class ContentPage
  */
-interface ContentPage {
-	/**
-	 * Returns whether or not the page should be loaded. This method is called before any HTML is
-	 * sent to the requester. This is where all the checks for valid users, permissions, session
-	 * state, etc is done.
-	 * @param Response $response
-	 * @return bool True if the page can be loaded; false otherwise.
-	 */
-	public static function canLoad(Response &$response = null);
+class ContentPage {
+	/** @var $template Template */
+	private $template;
+	/** @var $fields string[] */
+	private $fields;
 
 	/**
-	 * Returns the absolute location of the page content.
-	 * @return string
+	 * Creates a new content page instance with the given template driver.
+	 * @param Template $template
 	 */
-	public static function getContentLocation();
+	public function __construct(Template $template) {
+		$this->template = $template;
+	}
+
+	/**
+	 * Sets the given field for this content page with content.
+	 *
+	 * @param string|int $field The field to populate.
+	 * @param string $content The content to save.
+	 * @return $this This for daisy chaining
+	 * @throws TemplateException If the field is already set or invalid.
+	 */
+	public function setField($field, $content) {
+		if (isset($this->fields[$field])) {
+			throw new TemplateException("$field is already set for this content page");
+		}
+
+		if (!$this->template->isField($field)) {
+			throw new TemplateException("$field isn't a field within "
+					. get_class($this->template));
+		}
+
+		$this->fields[$field] = $content;
+		return $this;
+	}
+
+	/**
+	 * Returns whether or not this content page has the given field.
+	 *
+	 * @param $field
+	 * @return bool
+	 */
+	public function hasField($field) {
+		return isset($this->fields[$field]);
+	}
+
+	/**
+	 * Fetches the given field for this
+	 * @param string|int $field The field to get.
+	 * @return string The field contents or an empty string.
+	 * @throws TemplateException If the field is already set or invalid.
+	 */
+	public function getFieldContent($field) {
+		if (!$this->template->isField($field)) {
+			throw new TemplateException("$field isn't a field within "
+					. get_class($this->template));
+		}
+
+		return isset($this->fields[$field]) ? $this->fields[$field] : "";
+	}
+
+	/**
+	 * Fetches this content page's driving template.
+	 *
+	 * @return Template
+	 */
+	public function getTemplate() {
+		return $this->template;
+	}
+
+	/**
+	 * Renders this content page using its template.
+	 */
+	public function render() {
+		$this->template->render($this);
+	}
 }
