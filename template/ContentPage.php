@@ -6,70 +6,84 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/.site/php/fru1tme/Setup.php';
  * Class ContentPage
  */
 class ContentPage {
-	/** @var $template Template */
+	/** @var $registeredContentPage ContentPage */
+	private static $registeredContentPage;
+
+	/**
+	 * Sets up the content page to display using TemplateUtils
+	 *
+	 * @param ContentPage $contentPage
+	 */
+	public static function register(ContentPage $contentPage) {
+		self::$registeredContentPage = $contentPage;
+	}
+
+	/**
+	 * Executes (renders) the content page that has been registered
+	 *
+	 * @return boolean Returns true if the page could be rendered.
+	 */
+	public static function execute() {
+		if (!!self::$registeredContentPage) {
+			self::$registeredContentPage->render();
+			return true;
+		}
+		return false;
+	}
+
+	/** @var $template string */
 	private $template;
 	/** @var $fields string[] */
 	private $fields;
 
 	/**
-	 * Creates a new content page instance with the given template driver.
-	 * @param Template $template
-	 */
-	public function __construct(Template $template) {
-		$this->template = $template;
-	}
-
-	/**
-	 * Sets the given field for this content page with content.
+	 * Creates a new content page for a template with populated fields.
 	 *
-	 * @param string|int $field The field to populate.
-	 * @param string $content The content to save.
-	 * @return $this This for daisy chaining
-	 * @throws TemplateException If the field is already set or invalid.
+	 * @param string $templateClass
+	 * @param string[] $fields
+	 * @throws TemplateException
 	 */
-	public function setField($field, $content) {
-		if (isset($this->fields[$field])) {
-			throw new TemplateException("$field is already set for this content page");
+	public function __construct($templateClass, $fields) {
+		// Check incoming class is of type template
+		if (!class_exists($templateClass)) {
+			throw new TemplateException("$templateClass isn't a valid class.");
+		}
+		if (!is_subclass_of($templateClass, 'common\template\TemplateInterface')) {
+			throw new TemplateException(
+					"$templateClass does not extend the Template abstract class.");
 		}
 
-		if (!$this->template->isField($field)) {
-			throw new TemplateException("$field isn't a field within "
-					. get_class($this->template));
+		$templateFields = call_user_func($templateClass . '::getFields');
+		// Check for fields
+		foreach ($templateFields as $field) {
+			if (!isset($fields[$field])) {
+				throw new TemplateException(
+						get_class($this) . " doesn't define the template field $field");
+			}
 		}
 
-		$this->fields[$field] = $content;
-		return $this;
+		if (count($templateFields) !== count($fields)) {
+			throw new TemplateException(
+					get_class($this) . " has more fields than is declared by  $templateClass");
+		}
+
+		$this->template = $templateClass;
+		$this->fields = $fields;
 	}
 
 	/**
-	 * Returns whether or not this content page has the given field.
+	 * Returns all fields within this content page.
 	 *
-	 * @param $field
-	 * @return bool
+	 * @return \string[]
 	 */
-	public function hasField($field) {
-		return isset($this->fields[$field]);
-	}
-
-	/**
-	 * Fetches the given field for this
-	 * @param string|int $field The field to get.
-	 * @return string The field contents or an empty string.
-	 * @throws TemplateException If the field is already set or invalid.
-	 */
-	public function getFieldContent($field) {
-		if (!$this->template->isField($field)) {
-			throw new TemplateException("$field isn't a field within "
-					. get_class($this->template));
-		}
-
-		return isset($this->fields[$field]) ? $this->fields[$field] : "";
+	public function getFields() {
+		return $this->fields;
 	}
 
 	/**
 	 * Fetches this content page's driving template.
 	 *
-	 * @return Template
+	 * @return string
 	 */
 	public function getTemplate() {
 		return $this->template;
@@ -79,6 +93,6 @@ class ContentPage {
 	 * Renders this content page using its template.
 	 */
 	public function render() {
-		$this->template->render($this);
+		echo call_user_func($this->template . '::getRenderContents', $this->fields);
 	}
 }
