@@ -1,6 +1,5 @@
 <?php
 namespace common\template;
-require_once $_SERVER['DOCUMENT_ROOT'] . '/.site/php/fru1tme/Setup.php';
 
 /**
  * Class ContentPageBuilder
@@ -12,7 +11,7 @@ class ContentPageBuilder {
 	 * @param string $template The template class name to use.
 	 * @return ContentPageBuilder
 	 */
-	public static function ofTemplate($template) {
+	public static function of($template) {
 		return new ContentPageBuilder($template);
 	}
 
@@ -34,7 +33,7 @@ class ContentPageBuilder {
 	 * @return $this This for daisy chaining
 	 * @throws TemplateException If the field is already set or invalid.
 	 */
-	public function setField($field, $content) {
+	public function set($field, $content) {
 		if (isset($this->fields[$field])) {
 			throw new TemplateException("$field is already set for this content page");
 		}

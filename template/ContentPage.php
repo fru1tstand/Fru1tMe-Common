@@ -1,6 +1,5 @@
 <?php
 namespace common\template;
-require_once $_SERVER['DOCUMENT_ROOT'] . '/.site/php/fru1tme/Setup.php';
 
 /**
  * Class ContentPage
