@@ -1,16 +1,19 @@
 <?php
+namespace common\mysql;
+use mysqli_stmt;
+
 /**
  * Provides convenience methods to handle a prepared MySQLi statement
- * 
+ *
  * @version 0.1
  */
 class QueryResult {
 	private $stmt;
-	
+
 	public function __construct(mysqli_stmt $stmt) {
 		$this->stmt = $stmt;
 	}
-	
+
 	/**
 	 * Returns whether or not the statement had more than 0 affected rows and closes
 	 * the statement.
@@ -21,7 +24,7 @@ class QueryResult {
 		$this->stmt->close();
 		return $res;
 	}
-	
+
 	/**
 	 * Calls the passed method for each row the statement produced.
 	 * @param callable $doFn
@@ -35,9 +38,7 @@ class QueryResult {
 
 		while ($row = $result->fetch_assoc())
 			$doFn($row);
-		
+
 		return true;
 	}
 }
-
-?>

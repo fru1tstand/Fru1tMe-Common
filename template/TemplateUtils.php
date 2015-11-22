@@ -1,5 +1,7 @@
 <?php
 namespace common\template;
+use common\mysql\QueryResult;
+use common\object\Clazz;
 
 /**
  * Class PageHandler
@@ -7,6 +9,9 @@ namespace common\template;
  * This class handles page requests through url.
  */
 class TemplateUtils {
+	const REPEAT_ONCE = 1;
+	const REPEAT_ALL = -1;
+
 	/**
 	 * Attempts to render the GET page request and falls back to the default if not found.
 	 *
@@ -42,6 +47,16 @@ class TemplateUtils {
 		if (!self::renderContentFromFilePath($contentLocation . $defaultContentLocation)) {
 			throw new TemplateException("The default template failed to load.");
 		}
+	}
+
+	public static function getTemplateContentFromSql(
+			Clazz $templateClass,
+			QueryResult $sqlQueryResult,
+			$repeat = self::REPEAT_ONCE) {
+		$ret = "";
+		$sqlQueryResult->forEachResult(function($row) {
+			
+		});
 	}
 
 	private static function renderContentFromFilePath($path) {
