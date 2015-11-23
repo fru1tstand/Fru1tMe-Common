@@ -1,5 +1,6 @@
 <?php
 namespace common\mysql;
+use mysqli_sql_exception;
 use mysqli_stmt;
 
 /**
