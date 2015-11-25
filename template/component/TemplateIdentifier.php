@@ -1,5 +1,5 @@
 <?php
-namespace common\template;
+namespace common\template\component;
 
 /**
  * Each template is required to have an Identifier associated to it. Simply extend this class, and

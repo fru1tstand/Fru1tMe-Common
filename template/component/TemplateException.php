@@ -1,5 +1,5 @@
 <?php
-namespace common\template\internal;
+namespace common\template\component;
 use Exception;
 
 /**

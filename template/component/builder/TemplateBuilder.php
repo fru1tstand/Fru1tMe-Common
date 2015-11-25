@@ -1,8 +1,8 @@
 <?php
-namespace common\template\builder;
-use common\template\internal\TemplateException;
-use common\template\Template;
-use common\template\TemplateUtils;
+namespace common\template\component\builder;
+use common\template\component\Template;
+use common\template\component\TemplateException;
+use common\template\component\TemplateField;
 
 /**
  * A builder for Templates.
@@ -10,7 +10,7 @@ use common\template\TemplateUtils;
  * @package common\template\builder
  */
 class TemplateBuilder {
-	/** @type string[] */
+	/** @type TemplateField[] */
 	private $fields;
 	/** @type callable */
 	private $getRenderContentsFn;
@@ -30,24 +30,27 @@ class TemplateBuilder {
 	}
 
 	/**
-	 * Sets the entire fields column for this template.
+	 * Add a field to this template.
 	 *
-	 * @param array $fields
+	 * @param TemplateField $field
 	 * @return TemplateBuilder
 	 */
-	public function setFields(array $fields): TemplateBuilder {
-		$this->fields = $fields;
+	public function addField(TemplateField $field): TemplateBuilder {
+		if (isset($this->fields[$field->getName()])) {
+			throw new TemplateException("$field already exists.");
+		}
+		$this->fields[$field->getName()] = $field;
 		return $this;
 	}
 
 	/**
-	 * Adds a field for this template.
+	 * Add a field to this template.
 	 *
-	 * @param string $field
+	 * @param TemplateFieldBuilder $fieldBuilder
 	 * @return TemplateBuilder
 	 */
-	public function addField(string $field): TemplateBuilder {
-		$this->fields[] = $field;
+	public function addFieldBuilder(TemplateFieldBuilder $fieldBuilder): TemplateBuilder {
+		$this->addField($fieldBuilder->build());
 		return $this;
 	}
 
@@ -57,7 +60,7 @@ class TemplateBuilder {
 	 * @param string $id
 	 * @return TemplateBuilder
 	 */
-	public function setId(string $id): TemplateBuilder {
+	public function id(string $id): TemplateBuilder {
 		$this->id = $id;
 		return $this;
 	}
@@ -80,15 +83,14 @@ class TemplateBuilder {
 	 * @param callable $fn
 	 * @return TemplateBuilder
 	 */
-	public function setGetRenderContentsFn(callable $fn): TemplateBuilder {
+	public function setRenderFn(callable $fn): TemplateBuilder {
 		$this->getRenderContentsFn = $fn;
 		return $this;
 	}
 
 	/**
-	 * <p>For the most part, you want to use {@link TemplateBuilder::register} to both build and
-	 * register this TemplateBuilder instead of calling this function.
-	 * <p>Builds and returns this template.
+	 * Creates a new template for this builder and registers it within the pool of available
+	 * templates to use for content pages.
 	 *
 	 * @return Template
 	 * @throws TemplateException
@@ -106,14 +108,5 @@ class TemplateBuilder {
 		}
 
 		return new Template($this->id, $this->fields, $this->getRenderContentsFn);
-	}
-
-	/**
-	 * Builds and registers the result of this TemplateBuilder so that ContentPages can use it.
-	 *
-	 * @throws TemplateException
-	 */
-	public function register() {
-		TemplateUtils::storeTemplate($this->build());
 	}
 }

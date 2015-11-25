@@ -1,6 +1,7 @@
 <?php
 namespace common\template;
-use common\template\internal\TemplateException;
+use common\template\component\Content;
+use common\template\component\TemplateException;
 
 /**
  * Class TemplateUtils
@@ -25,71 +26,23 @@ class TemplateUtils {
 	const DEFAULT_CONTENT_PAGE = "index.php";
 
 
-	/** @type ContentPage */
+	/** @type Content */
 	private static $storedContentPage = null;
 
-	/** @type Template[] */
-	private static $storedTemplates = [];
 
 	/**
 	 * Stores a content page in the queue to be rendered. This method should be called by all
 	 * explicitly defined content pages.
 	 *
-	 * @param ContentPage $contentPage
+	 * @param Content $content
 	 * @throws TemplateException
 	 */
-	public static function storeContentPage(ContentPage $contentPage) {
+	public static function storeContent(Content $content) {
 		if (self::$storedContentPage !== null) {
-			throw new TemplateException("A "
-					. self::$storedContentPage->getTemplateId()
-					. " templated content page has already been stored, producing "
-					. self::$storedContentPage->getRenderContents()
-					. ". Could not add "
-					. $contentPage->getTemplateId()
-					. " driven content page with "
-					. $contentPage->getRenderContents());
+			throw new TemplateException("Content is already stored.");
 		}
-		self::$storedContentPage = $contentPage;
+		self::$storedContentPage = $content;
 	}
-
-	/**
-	 * Stores a template for use by a ContentPage. All templates used within a page load should be
-	 * stored via this method.
-	 *
-	 * @param Template $template
-	 * @throws TemplateException Thrown if the template already exists.
-	 */
-	public static function storeTemplate(Template $template) {
-		if (self::templateExists($template->getId())) {
-			throw new TemplateException($template->getId() . " is already stored.");
-		}
-		self::$storedTemplates[$template->getId()] = $template;
-	}
-
-	/**
-	 * Returns a template for the given templateId
-	 *
-	 * @param string $templateId
-	 * @return Template
-	 * @throws TemplateException Thrown if the template doesn't exist.
-	 */
-	public static function getTemplate(string $templateId): Template {
-		if (!self::templateExists($templateId)) {
-			throw new TemplateException($templateId . " was never stored.");
-		}
-		return self::$storedTemplates[$templateId];
-	}
-
-	/**
-	 * Returns whether or not a given template exists given the template ID.
-	 *
-	 * @param string $templateId
-	 * @return bool
-	 */
-	public static function templateExists(string $templateId): bool {
-		return isset(self::$storedTemplates[$templateId]);
-	}
-
 
 	/**
 	 * <p>Returns content given a path and default page from the current URL using

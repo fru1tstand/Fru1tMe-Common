@@ -1,9 +1,9 @@
 <?php
-namespace common\template\shared;
-use common\template\Template;
-use common\template\TemplateIdentifier;
+namespace common\template;
+use common\template\component\Template;
+use common\template\component\TemplateIdentifier;
 
-/**
+	/**
  * This template provides the ability to specify content-only pages with no wrapping text.
  */
 // Each template must extend TemplateIdentifier
@@ -32,14 +32,14 @@ $renderFn = function(array $fields): string {
 Template::newBuilder()
 	// We use that magical #getId() method that is defined in TemplateIdentifier (it's really
 	// just the fully qualified class name)
-	->setId(EmptyTemplate::getId())
+	->id(EmptyTemplate::getId())
 
 	// Add the field(s) associated to this template. Again in our case, it's just the field we
 	// called "content".
 	->addField(EmptyTemplate::FIELD_CONTENT)
 
 	// Set the render function
-	->setGetRenderContentsFn($renderFn)
+	->setRenderFn($renderFn)
 
 	// Finally, register the template, and that's it!
 	->register();

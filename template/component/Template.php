@@ -1,6 +1,7 @@
 <?php
-namespace common\template;
-use common\template\builder\TemplateBuilder;
+namespace common\template\component;
+use common\template\component\builder\ContentBuilder;
+use common\template\component\builder\TemplateBuilder;
 
 /**
  * Class Template
@@ -8,6 +9,9 @@ use common\template\builder\TemplateBuilder;
  * Defines a structure for content to populate.
  */
 class Template {
+	/** @type Template[] Holds all stored templates in an associative array */
+	private static $storedTemplates = [];
+
 	/**
 	 * Creates a new builder for a Template.
 	 *
@@ -17,10 +21,23 @@ class Template {
 		return new TemplateBuilder();
 	}
 
+	/**
+	 * Creates a new ContentBuilder from a given template id.
+	 *
+	 * @param string $templateId
+	 * @return ContentBuilder
+	 */
+	public static function newContentBuilder(string $templateId): ContentBuilder {
+		if (!isset(self::$storedTemplates[$templateId])) {
+			throw new TemplateException("$templateId doesn't exist (or hasn't been registered).");
+		}
+		return new ContentBuilder(self::$storedTemplates[$templateId]);
+	}
+
 
 	/** @type callable */
 	private $getRenderContentsFn;
-	/** @type string[] */
+	/** @type TemplateField[] */
 	private $fields;
 	/** @type string */
 	private $id;
@@ -31,11 +48,17 @@ class Template {
 	 * {@link TemplateUtils::registerTemplate} so that all content pages will have access to it.
 	 *
 	 * @param string $id
-	 * @param string[] $fields
+	 * @param TemplateField[] $fields This needs to be an associative array mapping the field name
+	 * to the TemplateField object.
 	 * @param callable $getRenderContentsFn
 	 * @internal
 	 */
 	public function __construct(string $id, array $fields, callable $getRenderContentsFn) {
+		if (isset(self::$storedTemplates[$id])) {
+			throw new TemplateException("$id template already exists.");
+		}
+		self::$storedTemplates[$id] = $this;
+
 		$this->id = $id;
 		$this->fields = $fields;
 		$this->getRenderContentsFn = $getRenderContentsFn;
@@ -49,7 +72,7 @@ class Template {
 	}
 
 	/**
-	 * @return string[]
+	 * @return TemplateField[]
 	 */
 	public function getFields(): array {
 		return $this->fields;
@@ -58,7 +81,7 @@ class Template {
 	/**
 	 * Returns a completed template given the fields as an associative array.
 	 *
-	 * @param string[] $fields
+	 * @param ContentField[] $fields
 	 * @return string
 	 */
 	public function getRenderContents(array $fields): string {
