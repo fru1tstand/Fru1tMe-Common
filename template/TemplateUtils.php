@@ -1,12 +1,11 @@
 <?php
 namespace common\template;
-use common\template\component\Content;
 use common\template\component\TemplateException;
 
 /**
  * Class TemplateUtils
  *
- * Template rendering utilities for the Fru1tMe templating engine.
+ * Content rendering utilities for the Fru1tMe templating engine.
  */
 class TemplateUtils {
 	/**
@@ -25,24 +24,6 @@ class TemplateUtils {
 	 */
 	const DEFAULT_CONTENT_PAGE = "index.php";
 
-
-	/** @type Content */
-	private static $storedContentPage = null;
-
-
-	/**
-	 * Stores a content page in the queue to be rendered. This method should be called by all
-	 * explicitly defined content pages.
-	 *
-	 * @param Content $content
-	 * @throws TemplateException
-	 */
-	public static function storeContent(Content $content) {
-		if (self::$storedContentPage !== null) {
-			throw new TemplateException("Content is already stored.");
-		}
-		self::$storedContentPage = $content;
-	}
 
 	/**
 	 * <p>Returns content given a path and default page from the current URL using
@@ -110,10 +91,6 @@ class TemplateUtils {
 
 		/** @noinspection PhpIncludeInspection */
 		require($path);
-		if (self::$storedContentPage === null) {
-			throw new TemplateException("No content page was found.");
-		}
-		self::$storedContentPage->render();
 		return true;
 	}
 
