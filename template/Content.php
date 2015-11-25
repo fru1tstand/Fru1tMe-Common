@@ -1,29 +1,56 @@
 <?php
 namespace common\template;
 use common\template\component\ContentField;
-use common\template\component\TemplateField;
-
-require_once $_SERVER['DOCUMENT_ROOT'] . '/.site/php/csgoderank/Setup.php';
+use common\template\component\TemplateException;
+use common\template\component\TemplateInterface;
 
 /**
- * Class Content
+ * Defines the starter for a content/template page.
  */
-abstract class Content {
+abstract class Content implements TemplateInterface {
+	/** @type ContentField[] */
+	private $contentFields;
 
+	protected function __construct() {
+		$this->contentFields = [];
+		foreach (static::getTemplateFields() as $templateField) {
+			$this->contentFields[$templateField->getName()] = $templateField->newContentField();
+		}
+	}
 
 	/**
-	 * Produces the complete HTML string for this content page given content fields for this page.
+	 * Specifies content for a given field for this content page.
 	 *
-	 * @param ContentField[] $fields An associative array mapping fields to ContentField objects.
+	 * @param string $field
+	 * @param string $content
+	 * @return Content
+	 * @throws TemplateException
+	 */
+	public function with(string $field, string $content): Content {
+		if (!isset($this->contentFields[$field])) {
+			throw new TemplateException("$field doesn't exist in this template");
+		}
+		if (isset($this->contentFields[$field])) {
+			throw new TemplateException("$field is already set for this content page");
+		}
+
+		$this->contentFields[$field]->setContent($content);
+		return $this;
+	}
+
+	/**
+	 * Returns the template HTML populated with this content page.
+	 *
 	 * @return string
 	 */
-	public abstract function getTemplateRendering(array $fields): string;
+	public function getRenderContents(): string {
+		return static::getTemplateRendering($this->contentFields);
+	}
 
 	/**
-	 * Returns the TemplateField objects associated to this content page. These are the fields that
-	 * are used within the template rendering method.
-	 *
-	 * @return TemplateField[]
+	 * Renders the HTML created by this content page from the controlling template.
 	 */
-	public abstract function getTemplateFields(): array;
+	public function render() {
+		echo $this->getRenderContents();
+	}
 }
