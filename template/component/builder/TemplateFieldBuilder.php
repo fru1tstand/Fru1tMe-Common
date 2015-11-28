@@ -74,6 +74,6 @@ class TemplateFieldBuilder {
 	 * @return TemplateField
 	 */
 	public function build(): TemplateField {
-		return new TemplateField($this->name, $this->default, $this->required);
+		return new TemplateField($this->name, $this->required, $this->default);
 	}
 }

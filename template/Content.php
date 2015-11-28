@@ -20,7 +20,7 @@ abstract class Content implements ContentInterface {
 	 * @throws TemplateException Thrown if you're using this class incorrectly. Doubt you'll see
 	 * it. But sometimes it's late or something.
 	 */
-	public static final function createEmpty(): Content {
+	public static final function createContent(): Content {
 		if (static::class == self::class) {
 			throw new TemplateException("You're trying to create a new content page without
 			specifying the template to use. Try calling #create* through the template (eg.
@@ -39,8 +39,8 @@ abstract class Content implements ContentInterface {
 	 * @return Content
 	 * @throws TemplateException
 	 */
-	public static final function createFromFields(array $contents): Content {
-		$contentPage = self::createEmpty();
+	public static final function createContentFrom(array $contents): Content {
+		$contentPage = self::createContent();
 		foreach ($contents as $field => $content) {
 			$contentPage->with($field, $content);
 		}
@@ -60,10 +60,10 @@ abstract class Content implements ContentInterface {
 			TemplateName::getTemplateFields()) where TemplateName is the class that extends
 			Content.");
 		}
-		if (self::$templateFields === null) {
-			self::$templateFields = static::getTemplateFields_Internal();
+		if (!isset(self::$templateFields[static::class])) {
+			self::$templateFields[static::class] = static::getTemplateFields_Internal();
 		}
-		return self::$templateFields;
+		return self::$templateFields[static::class];
 	}
 
 
@@ -71,9 +71,9 @@ abstract class Content implements ContentInterface {
 	private $contentFields;
 
 	/**
-	 * Creates a new content page
+	 * Instantiates this content page.
 	 */
-	protected final function __construct() {
+	private final function __construct() {
 		$this->contentFields = [];
 		foreach (self::getTemplateFields() as $templateField) {
 			$this->contentFields[$templateField->getName()] = $templateField->newContentField();
@@ -88,12 +88,12 @@ abstract class Content implements ContentInterface {
 	 * @return Content
 	 * @throws TemplateException
 	 */
-	public final function with(string $field, string $content): Content {
+	public final function with(string $field, string $content = null): Content {
 		if (!isset($this->contentFields[$field])) {
-			throw new TemplateException("$field doesn't exist in this template");
+			throw new TemplateException("$field doesn't exist in " . static::class);
 		}
-		if (isset($this->contentFields[$field])) {
-			throw new TemplateException("$field is already set for this content page");
+		if ($this->contentFields[$field]->hasContent()) {
+			throw new TemplateException("$field is already set for " . static::class);
 		}
 
 		$this->contentFields[$field]->setContent($content);

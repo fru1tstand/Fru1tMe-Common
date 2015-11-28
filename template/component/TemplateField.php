@@ -31,7 +31,7 @@ class TemplateField {
 	 * @param bool $required
 	 * @internal
 	 */
-	public function __construct(string $name, string $default = "", bool $required = false) {
+	public function __construct(string $name, bool $required = false, string $default = null) {
 		$this->name = $name;
 		$this->default = $default;
 		$this->required = $required;

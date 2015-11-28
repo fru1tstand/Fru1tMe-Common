@@ -30,7 +30,7 @@ class ContentField {
 	 */
 	public function __construct(TemplateField $templateField, string $content = null) {
 		$this->templateField = $templateField;
-		$this->content = $content ?? $templateField->getDefault();
+		$this->content = $content;
 	}
 
 	/**
@@ -46,7 +46,7 @@ class ContentField {
 	 * @return string
 	 */
 	public function getContent(): string {
-		return $this->content ?? "";
+		return $this->content ?? $this->templateField->getDefault() ?? "";
 	}
 
 	/**
@@ -54,7 +54,7 @@ class ContentField {
 	 *
 	 * @param string $content
 	 */
-	public function setContent(string $content) {
+	public function setContent(string $content = null) {
 		$this->content = $content;
 	}
 
