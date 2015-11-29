@@ -23,7 +23,7 @@ class EmptyTemplate extends Content {
 	 * @param ContentField[] $fields
 	 * @return string
 	 */
-	public static function getRenderContent(array $fields): string {
+	public static function getTemplateRenderContents(array $fields): string {
 		return $fields[self::FIELD_CONTENT]->getContent();
 	}
 
@@ -44,7 +44,7 @@ class EmptyTemplate extends Content {
 	// Here is an example of heredoccing with some extra HTML. This is NOT part of this
 	// EmptyTemplate class and is just here as an example. I am, however, using the same fields
 	// from the EmptyTemplate class.
-	public static function getRenderContentExampleWithHeredoc(array $fields): string {
+	public static function getTemplateRenderContentExampleWithHeredoc(array $fields): string {
 		return <<<HTML
 <!DOCTYPE html>
 <html lang="en">

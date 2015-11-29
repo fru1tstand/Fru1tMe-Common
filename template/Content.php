@@ -9,8 +9,19 @@ use common\template\component\TemplateField;
  * Provides methods for creating content pages from templates.
  */
 abstract class Content implements ContentInterface {
-	/** @var TemplateField[] */
+	/** Renders the template and content as plain text HTML (default) */
+	const RENDER_FORMAT_ALL_HTML = 1;
+	/** Renders solely the content field as JSON */
+	const RENDER_FORMAT_CONTENT_ONLY_JSON = 2;
+
+	/** The name for the key in the json output array that specifies the template name */
+	const JSON_TEMPLATE_KEY = "template";
+
+	/** @var TemplateField[][] */
 	private static $templateFields = null;
+
+	/** @type int Holds the render options for content rendering */
+	private static $renderFormat = self::RENDER_FORMAT_ALL_HTML;
 
 	/**
 	 * Creates and returns a new empty content page. One should use this method for creating static
@@ -66,6 +77,17 @@ abstract class Content implements ContentInterface {
 		return self::$templateFields[static::class];
 	}
 
+	/**
+	 * Sets the render format for all content pages. This will effect all subsequent renderings so
+	 * setting this multiple times may be necessary. Use the RENDER_FORMAT constants defined in
+	 * this class. An invalid value will default to RENDER_FORMAT_ALL_HTML.
+	 *
+	 * @param int $renderFormat
+	 */
+	public static final function setRenderFormat(int $renderFormat) {
+		self::$renderFormat = $renderFormat;
+	}
+
 
 	/** @type ContentField[] */
 	private $contentFields;
@@ -101,12 +123,15 @@ abstract class Content implements ContentInterface {
 	}
 
 	/**
-	 * Returns the template HTML populated with this content page.
+	 * Returns the template HTML populated with this content page. The output of this method is
+	 * dependent on the renderFormat flag which can change if this outputs the entire template
+	 * or solely the content.
 	 *
+	 * @param bool $forceRenderAll Disables global flag dependency and always renders both
 	 * @return string
 	 * @throws TemplateException
 	 */
-	public final function getRenderContents(): string {
+	public final function getRenderContents(bool $forceRenderAll = false): string {
 		foreach ($this->contentFields as $contentField) {
 			if ($contentField->getTemplateField()->isRequired() && !$contentField->hasContent()) {
 				throw new TemplateException(
@@ -114,13 +139,26 @@ abstract class Content implements ContentInterface {
 						. " is required for this template.");
 			}
 		}
-		return static::getRenderContent($this->contentFields);
+
+		if (!$forceRenderAll && self::$renderFormat == self::RENDER_FORMAT_CONTENT_ONLY_JSON) {
+			$jsonArray = $this->contentFields;
+			$jsonArray[self::JSON_TEMPLATE_KEY] = static::class;
+			return json_encode($jsonArray);
+		}
+
+		return static::getTemplateRenderContents($this->contentFields);
 	}
 
 	/**
-	 * Renders the HTML created by this content page from the controlling template.
+	 * Renders the HTML created by this content page from the controlling template. The output of
+	 * this method is dependent on the renderFormat flag which can change if this outputs the
+	 * entire template or solely the content.
+	 *
+	 * @param bool $forceRenderAll Disables global flag dependency and always renders both
+	 * template and content.
+	 * @throws TemplateException
 	 */
-	public final function render() {
-		echo $this->getRenderContents();
+	public final function render(bool $forceRenderAll = false) {
+		echo $this->getRenderContents($forceRenderAll);
 	}
 }
