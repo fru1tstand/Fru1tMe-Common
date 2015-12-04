@@ -11,7 +11,7 @@ interface ContentInterface {
 	 * @param ContentField[] $fields An associative array mapping fields to ContentField objects.
 	 * @return string
 	 */
-	static function getTemplateRenderContents(array $fields): string;
+	public static function getTemplateRenderContents(array $fields): string;
 
 	/**
 	 * <p>Use [TemplateName]::getTemplateFields. This is an internal method.
