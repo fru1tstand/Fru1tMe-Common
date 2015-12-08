@@ -141,7 +141,10 @@ abstract class Content implements ContentInterface {
 		}
 
 		if (!$forceRenderAll && self::$renderFormat == self::RENDER_FORMAT_CONTENT_ONLY_JSON) {
-			$jsonArray = $this->contentFields;
+			$jsonArray = [];
+			foreach ($this->contentFields as $key => $field) {
+				$jsonArray[$key] = $field->getContent();
+			}
 			$jsonArray[self::JSON_TEMPLATE_KEY] = static::class;
 			return json_encode($jsonArray);
 		}

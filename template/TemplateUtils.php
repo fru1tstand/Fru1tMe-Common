@@ -9,8 +9,7 @@ use common\template\component\TemplateException;
  */
 class TemplateUtils {
 	/** Should be equal to the GET parameter set by the redirecting .htaccess from a mapped url.
-	 * @see TemplateUtils::renderContentFromUrl
-	 */
+	 * @see TemplateUtils::renderContentFromUrl */
 	const PATH_GET_PARAMETER = "page";
 
 	/** The default name for the default content page given a content path
@@ -59,12 +58,14 @@ class TemplateUtils {
 	public static function renderContentFromUrl (
 			string $contentPath,
 			string $defaultContentPagePath = self::DEFAULT_CONTENT_PAGE) {
-		// Set Content flags
-		$contentRenderFormat = Content::RENDER_FORMAT_ALL_HTML;
+
+		// Set render format defaulting to standard HTML if not specified
+		Content::setRenderFormat(Content::RENDER_FORMAT_ALL_HTML);
 		if (self::ALLOW_GET_RETURN_FORMAT_PARAMETER
 				&& isset($_GET[self::RETURN_FORMAT_PARAMETER])
 				&& $_GET[self::RETURN_FORMAT_PARAMETER] == self::RETURN_FORMAT_JSON) {
-			$contentRenderFormat = Content::RENDER_FORMAT_CONTENT_ONLY_JSON;
+			Content::setRenderFormat(Content::RENDER_FORMAT_CONTENT_ONLY_JSON);
+			header('Content-Type: application/json');
 		}
 
 		$contentPath .= "/";
