@@ -46,7 +46,7 @@ class ContentField {
 	 * @return string
 	 */
 	public function getContent(): string {
-		return $this->content ?? $this->templateField->getDefault() ?? "";
+		return ($this->hasContent()) ? $this->content : $this->templateField->getDefault();
 	}
 
 	/**
@@ -64,7 +64,7 @@ class ContentField {
 	 * @return bool
 	 */
 	public function hasContent(): bool {
-		return !is_null($this->content) && $this->content !== "";
+		return !is_null($this->content) && $this->content != "";
 	}
 
 	public function __toString() {
