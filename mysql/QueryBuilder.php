@@ -49,7 +49,7 @@ class QueryBuilder {
 	 * @param int $paramType Use QueryBuilder::PARAM_TYPE_*
 	 * @return QueryBuilder
 	 */
-	public function withParam(mixed $paramValue, int $paramType): QueryBuilder {
+	public function withParam($paramValue, int $paramType): QueryBuilder {
 		$this->queryParams[] = array(
 				self::PARAM_STORE_VALUE => $paramValue,
 				self::PARAM_STORE_TYPE => $paramType
@@ -64,12 +64,15 @@ class QueryBuilder {
 	 * @return QueryResult
 	 */
 	public function build(): QueryResult {
-		if (is_null($this->queryString) || trim($this->queryString) === '')
+		if (is_null($this->queryString) || trim($this->queryString) === '') {
 			throw new Exception("The query string was never set");
+		}
 
 		$stmt = $this->sqlConnectionReference->prepare($this->queryString);
-		if (!$stmt)
-			throw new mysqli_sql_exception("Could not prepare statement");
+		if (!$stmt) {
+			throw new mysqli_sql_exception("Could not prepare statement: "
+					. $this->sqlConnectionReference->error);
+		}
 
 		if (count($this->queryParams) > 0) {
 			// Store what would be the arguments of #bind_param in an array where the
