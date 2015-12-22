@@ -1,5 +1,6 @@
 <?php
 namespace common\template;
+use common\mysql\MySQL;
 use common\template\component\ContentField;
 use common\template\component\TemplateException;
 use common\template\component\ContentInterface;
@@ -56,6 +57,24 @@ abstract class Content implements ContentInterface {
 			$contentPage->with($field, $content);
 		}
 		return $contentPage;
+	}
+
+	/**
+	 * Creates and returns an array of Content objects from an SQL query that is executed against
+	 * the current MySQL page session defined by MySQL::setup.
+	 *
+	 * @param string $query
+	 * @return Content[]
+	 */
+	public static final function createContentsFromQuery(string $query): array {
+		$results = [];
+		MySQL::newQueryBuilder()
+			->withQuery($query)
+			->build()
+			->forEachResult(function($row) use (&$results) {
+				$results[] = self::createContentFrom($row);
+			});
+		return $results;
 	}
 
 	/**
