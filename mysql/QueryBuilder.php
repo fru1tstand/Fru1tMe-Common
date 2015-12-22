@@ -1,6 +1,9 @@
 <?php
 namespace common\mysql;
+use Exception;
 use mysqli;
+use mysqli_sql_exception;
+use ReflectionClass;
 
 /**
  * Provides convenience methods to create and prepare MySQLi statements
@@ -20,18 +23,10 @@ class QueryBuilder {
 	private $sqlConnectionReference;
 
 	/**
-	 * Does what it says on the lid.
-	 *
+	 * Creates a new instance of a QueryBuilder using a provided MySQLI instance
 	 * @param mysqli $conn
-	 * @return QueryBuilder
 	 */
-	public static function create(mysqli $conn) {
-		return new self($conn);
-	}
-
-	// I hate you and everything you do, so don't instantiate this yourself. Instead, use the
-	// #Create() method.
-	private function __construct(mysqli $conn) {
+	public function __construct(mysqli $conn) {
 		$this->queryString = null;
 		$this->queryParams = array();
 		$this->sqlConnectionReference = $conn;
@@ -42,7 +37,7 @@ class QueryBuilder {
 	 * @param string $queryString
 	 * @return QueryBuilder
 	 */
-	public function withQuery($queryString) {
+	public function withQuery(string $queryString): QueryBuilder {
 		$this->queryString = $queryString;
 		return $this;
 	}
@@ -50,11 +45,11 @@ class QueryBuilder {
 	/**
 	 * Specifies a parameter. These must come in the order they appear
 	 * in the text query.
-	 * @param string|int|double|blob $paramValue
+	 * @param mixed $paramValue
 	 * @param int $paramType Use QueryBuilder::PARAM_TYPE_*
 	 * @return QueryBuilder
 	 */
-	public function withParam($paramValue, $paramType) {
+	public function withParam(mixed $paramValue, int $paramType): QueryBuilder {
 		$this->queryParams[] = array(
 				self::PARAM_STORE_VALUE => $paramValue,
 				self::PARAM_STORE_TYPE => $paramType
@@ -68,7 +63,7 @@ class QueryBuilder {
 	 * @throws mysqli_sql_exception If the statement could not prepared
 	 * @return QueryResult
 	 */
-	public function build() {
+	public function build(): QueryResult {
 		if (is_null($this->queryString) || trim($this->queryString) === '')
 			throw new Exception("The query string was never set");
 
@@ -77,17 +72,17 @@ class QueryBuilder {
 			throw new mysqli_sql_exception("Could not prepare statement");
 
 		if (count($this->queryParams) > 0) {
-			//Store what would be the arguments of #bind_param in an array where the
-			//first element is the string of the types the parameters will be.
+			// Store what would be the arguments of #bind_param in an array where the
+			// first element is the string of the types the parameters will be.
 			$paramArray = array("");
 			for ($i = 0; $i < count($this->queryParams); $i++) {
 				$paramArray[0] .= $this->queryParams[$i][QueryBuilder::PARAM_STORE_TYPE];
 				$paramArray[] = &$this->queryParams[$i][QueryBuilder::PARAM_STORE_VALUE];
 			}
 
-			//Create a reflection class to dynamically invoke #bind_param as
-			//it does not natively support being passed an array of parameters
-			//'nor does it allow to bind 1 parameter at a time.
+			// Create a reflection class to dynamically invoke #bind_param as
+			// it does not natively support being passed an array of parameters
+			// 'nor does it allow binding 1 parameter at a time.
 			$mysqliReflectionClass = new ReflectionClass("mysqli_stmt");
 			$bindParamMethod = $mysqliReflectionClass->getMethod("bind_param");
 			$bindParamMethod->invokeArgs($stmt, $paramArray);

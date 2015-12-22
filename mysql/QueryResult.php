@@ -18,9 +18,9 @@ class QueryResult {
 	/**
 	 * Returns whether or not the statement had more than 0 affected rows and closes
 	 * the statement.
-	 * @return boolean
+	 * @return bool
 	 */
-	public function didAffectRows() {
+	public function didAffectRows(): bool {
 		$res = $this->stmt->affected_rows > 0;
 		$this->stmt->close();
 		return $res;
@@ -30,9 +30,9 @@ class QueryResult {
 	 * Calls the passed method for each row the statement produced.
 	 * @param callable $doFn
 	 * @throws mysqli_sql_exception If no rows returned
-	 * @return boolean
+	 * @return bool
 	 */
-	public function forEachResult(callable $doFn) {
+	public function forEachResult(callable $doFn): bool {
 		$result = $this->stmt->get_result();
 		if ($result->num_rows < 1)
 			throw new mysqli_sql_exception("No rows returned from the query: " . $this->stmt);
