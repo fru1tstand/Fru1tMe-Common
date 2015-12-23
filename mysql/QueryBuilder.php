@@ -46,10 +46,10 @@ class QueryBuilder {
 	 * Specifies a parameter. These must come in the order they appear
 	 * in the text query.
 	 * @param mixed $paramValue
-	 * @param int $paramType Use QueryBuilder::PARAM_TYPE_*
+	 * @param string $paramType Use QueryBuilder::PARAM_TYPE_*
 	 * @return QueryBuilder
 	 */
-	public function withParam($paramValue, int $paramType): QueryBuilder {
+	public function withParam($paramValue, string $paramType): QueryBuilder {
 		$this->queryParams[] = array(
 				self::PARAM_STORE_VALUE => $paramValue,
 				self::PARAM_STORE_TYPE => $paramType
