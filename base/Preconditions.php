@@ -2,12 +2,32 @@
 namespace common\base;
 
 /**
- * Convenience methods for sanitation and input checks
- * @package common\base
+ * Common checks done for data validation within functions.
  */
 class Preconditions {
-	// Arrays
-	public static function arrayNullInvalidOrEmpty($array) {
-		return is_null($array) || !is_array($array) || count($array) == 0;
+	/**
+	 * Returns true if the passed parameter is not null and has elements.
+	 *
+	 * @param array $array
+	 * @return bool
+	 */
+	public static function arrayNullOrEmpty(array $array): bool {
+		return is_null($array) || count($array) == 0;
+	}
+
+	/**
+	 * Check if one or more variables are null. Returns true on the first encountered null variable.
+	 * Otherwise, returns true.
+	 *
+	 * @param ...$vars
+	 * @return bool
+	 */
+	public static function isNull(...$vars): bool {
+		foreach ($vars as $var) {
+			if (is_null($var)) {
+				return true;
+			}
+		}
+		return false;
 	}
 }

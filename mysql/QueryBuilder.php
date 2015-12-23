@@ -24,6 +24,7 @@ class QueryBuilder {
 
 	/**
 	 * Creates a new instance of a QueryBuilder using a provided MySQLI instance
+	 *
 	 * @param mysqli $conn
 	 */
 	public function __construct(mysqli $conn) {
@@ -34,10 +35,11 @@ class QueryBuilder {
 
 	/**
 	 * Specifies the text to use as the query
+	 *
 	 * @param string $queryString
-	 * @return QueryBuilder
+	 * @return self
 	 */
-	public function withQuery(string $queryString): QueryBuilder {
+	public function withQuery(string $queryString): self {
 		$this->queryString = $queryString;
 		return $this;
 	}
@@ -45,11 +47,12 @@ class QueryBuilder {
 	/**
 	 * Specifies a parameter. These must come in the order they appear
 	 * in the text query.
+	 *
 	 * @param mixed $paramValue
 	 * @param string $paramType Use QueryBuilder::PARAM_TYPE_*
-	 * @return QueryBuilder
+	 * @return self
 	 */
-	public function withParam($paramValue, string $paramType): QueryBuilder {
+	public function withParam($paramValue, string $paramType): self {
 		$this->queryParams[] = array(
 				self::PARAM_STORE_VALUE => $paramValue,
 				self::PARAM_STORE_TYPE => $paramType
@@ -59,6 +62,7 @@ class QueryBuilder {
 
 	/**
 	 * Prepares the query, bind the parameters, and spits out a QueryResult
+	 *
 	 * @throws Exception If the query string was not set
 	 * @throws mysqli_sql_exception If the statement could not prepared
 	 * @return QueryResult

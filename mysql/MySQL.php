@@ -1,6 +1,6 @@
 <?php
 namespace common\mysql;
-use common\base\Lang;
+use common\base\Preconditions;
 use mysqli;
 use mysqli_sql_exception;
 
@@ -41,7 +41,8 @@ class MySQL {
 
 	private static function getConnection(): mysqli {
 		if (is_null(self::$connection)) {
-			if (Lang::isNull(self::$host, self::$username, self::$password, self::$schema)) {
+			if (Preconditions::isNull(self::$host, self::$username, self::$password,
+					self::$schema)) {
 				throw new mysqli_sql_exception("MySQL was never set up with database credentials");
 			}
 

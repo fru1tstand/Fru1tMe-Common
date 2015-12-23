@@ -20,7 +20,7 @@ class StandardTime {
 	 * @param int $from
 	 * @return int
 	 */
-	public static function toStandard($time, $from) {
+	public static function toStandard(int $time, int $from): int {
 		return self::convert($time, $from, 0);
 	}
 
@@ -30,7 +30,7 @@ class StandardTime {
 	 * @param int $to
 	 * @return int
 	 */
-	public static function fromStandard($time, $to) {
+	public static function fromStandard(int $time, int $to): int {
 		return self::convert($time, 0, $to);
 	}
 
@@ -40,7 +40,7 @@ class StandardTime {
 	 * @param int $to UTC timezone that you want
 	 * @return int
 	 */
-	public static function convert($time, $from, $to) {
+	public static function convert(int $time, int $from, int $to): int {
 		// From -8 to +2 should add 10 hours, ((+2 [to]) - (-8 [from])) = 10
 		return $time + (60 * 60 * ($to - $from));
 	}
@@ -51,7 +51,7 @@ class StandardTime {
 	 * Gets the current UTC+0 time.
 	 * @return int
 	 */
-	public static function getTime() {
+	public static function getTime(): int {
 		if (!date_default_timezone_get() == "UTC")
 			date_default_timezone_set("UTC");
 		return time();
@@ -62,7 +62,7 @@ class StandardTime {
 	 * @param int $time
 	 * @return int
 	 */
-	public static function floorToDate($time) {
+	public static function floorToDate($time): int {
 		return $time - ($time % self::SECONDS_IN_DAY);
 	}
 }

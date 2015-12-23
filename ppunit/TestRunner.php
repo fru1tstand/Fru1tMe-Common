@@ -2,7 +2,6 @@
 namespace common\ppunit;
 
 /**
- * Welp. It runs the tests.
  * @package common\ppunit
  */
 class TestRunner {
@@ -11,21 +10,25 @@ class TestRunner {
     private static $tests = array();
 
     public static function run(UnitTest $test) {
-        if (!in_array($test, self::$tests))
-            self::$tests[] = $test;
+        if (!in_array($test, self::$tests)) {
+			self::$tests[] = $test;
+		}
 
-        if (self::$runLevel == self::RUN_LEVEL_SINGLE_FILE)
-            self::displayTestResults();
+        if (self::$runLevel == self::RUN_LEVEL_SINGLE_FILE) {
+			self::displayTestResults();
+		}
     }
 
 	public static function runGroup(GroupTests $gTests) {
-		if (self::$runLevel < $gTests->getRunLevel())
+		if (self::$runLevel < $gTests->getRunLevel()) {
 			self::$runLevel = $gTests->getRunLevel();
+		}
 
 		$gTests->includeTests();
 
-		if (self::$runLevel <= $gTests->getRunLevel())
+		if (self::$runLevel <= $gTests->getRunLevel()) {
 			self::displayTestResults();
+		}
 	}
 
     private static function displayTestResults() {
