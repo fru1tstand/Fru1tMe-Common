@@ -1,12 +1,12 @@
 <?php
 namespace common\mysql;
-use mysqli_sql_exception;
 use mysqli_stmt;
 
 /**
- * Provides convenience methods to handle a prepared MySQLi statement
+ * Handles MySQLi statements that have been executed against a database. Wraps common procedures
+ * like iterating over result sets or returning single value result sets.
  *
- * @version 0.1
+ * @version 0.2
  */
 class QueryResult {
 	private $stmt;
@@ -27,19 +27,61 @@ class QueryResult {
 	}
 
 	/**
-	 * Calls the passed method for each row the statement produced.
+	 * Calls the passed method for each row the statement produced. Returns false if no rows
+	 * returned.
+	 *
 	 * @param callable $doFn
-	 * @throws mysqli_sql_exception If no rows returned
 	 * @return bool
 	 */
 	public function forEachResult(callable $doFn): bool {
 		$result = $this->stmt->get_result();
-		if ($result->num_rows < 1)
-			throw new mysqli_sql_exception("No rows returned from the query: " . $this->stmt);
+		$this->stmt->close();
 
-		while ($row = $result->fetch_assoc())
+		if ($result->num_rows < 1) {
+			return false;
+		}
+
+		while ($row = $result->fetch_assoc()) {
 			$doFn($row);
+		}
 
 		return true;
+	}
+
+	/**
+	 * Used for single-column, single-row lookup queries. Returns the value obtained from the query.
+	 * Returns null if 0 or more than 1 row resulted from the query. Returns the first column value
+	 * if multiple columns were defined within the query.
+	 *
+	 * @return string
+	 */
+	public function getResultValue(): string {
+		$result = $this->stmt->get_result();
+		$this->stmt->close();
+
+		if ($result->num_rows != 1) {
+			return null;
+		}
+
+		$row = $result->fetch_row();
+		return $row[0];
+	}
+
+	/**
+	 * Used for single-row lookup queries. Returns all column values obtained from the query in an
+	 * associative array mapping column name to values. Returns null if 0 or more than 1 row
+	 * resulted from the query.
+	 *
+	 * @return array
+	 */
+	public function getResultValues(): array {
+		$result = $this->stmt->get_result();
+		$this->stmt->close();
+
+		if ($result->num_rows != 1) {
+			return null;
+		}
+
+		return $result->fetch_assoc();
 	}
 }
