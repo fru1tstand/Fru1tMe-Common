@@ -8,11 +8,11 @@ class Preconditions {
 	/**
 	 * Returns true if the passed parameter is not null and has elements.
 	 *
-	 * @param array $array
+	 * @param mixed $array
 	 * @return bool
 	 */
-	public static function arrayNullOrEmpty(array $array): bool {
-		return is_null($array) || count($array) == 0;
+	public static function arrayNullOrEmpty($array): bool {
+		return is_null($array) || !is_array($array) || count($array) == 0;
 	}
 
 	/**
