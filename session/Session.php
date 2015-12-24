@@ -53,7 +53,7 @@ class Session {
 	 */
 	public static function get($key) {
 		if (!self::exists($key)) {
-			return false;
+			return null;
 		}
 
 		return $_SESSION[$key];
