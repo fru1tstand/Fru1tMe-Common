@@ -41,7 +41,7 @@ class Http {
 	 * @param string $paramName
 	 * @return string | null
 	 */
-	public static function getGetParamValue(string $paramName): string {
+	public static function getGetParamValue(string $paramName) {
 		return self::getParamValue($paramName, $_GET);
 	}
 
@@ -49,9 +49,9 @@ class Http {
 	 * Returns the value of the specified POST parameter or null if it doesn't exist.
 	 *
 	 * @param string $paramName
-	 * @return string
+	 * @return string | null
 	 */
-	public static function getPostParamValue(string $paramName): string {
+	public static function getPostParamValue(string $paramName) {
 		return self::getParamValue($paramName, $_POST);
 	}
 
@@ -59,9 +59,9 @@ class Http {
 	/**
 	 * @param string $paramName
 	 * @param array $paramArray
-	 * @return string
+	 * @return string | null
 	 */
-	private static function getParamValue(string $paramName, array $paramArray): string {
+	private static function getParamValue(string $paramName, array $paramArray) {
 		if (isset($paramArray[$paramName])) {
 			return $paramArray[$paramName];
 		}
