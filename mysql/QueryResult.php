@@ -53,9 +53,9 @@ class QueryResult {
 	 * Returns null if 0 or more than 1 row resulted from the query. Returns the first column value
 	 * if multiple columns were defined within the query.
 	 *
-	 * @return string
+	 * @return string | null
 	 */
-	public function getResultValue(): string {
+	public function getResultValue() {
 		$result = $this->stmt->get_result();
 		$this->stmt->close();
 
@@ -72,9 +72,9 @@ class QueryResult {
 	 * associative array mapping column name to values. Returns null if 0 or more than 1 row
 	 * resulted from the query.
 	 *
-	 * @return array
+	 * @return array | null
 	 */
-	public function getResultValues(): array {
+	public function getResultValues() {
 		$result = $this->stmt->get_result();
 		$this->stmt->close();
 
