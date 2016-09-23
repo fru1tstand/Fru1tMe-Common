@@ -1,12 +1,10 @@
 <?php
-namespace common\mysql;
+namespace me\fru1t\common\mysql;
 use mysqli_stmt;
 
 /**
- * Handles MySQLi statements that have been executed against a database. Wraps common procedures
- * like iterating over result sets or returning single value result sets.
- *
- * @version 0.2
+ * Wraps mysqli_stmt objects that have already been executed. Provides methods to manipulate output
+ * (for SELECT queries).
  */
 class QueryResult {
 	private $stmt;
@@ -27,8 +25,9 @@ class QueryResult {
 	}
 
 	/**
-	 * Calls the passed method for each row the statement produced. Returns false if no rows
-	 * returned.
+	 * Invokes the given callable, passing a single row as the sole parameter. Iterates through all
+   * results in the order that it was received (respecting the ORDER BY clause). Returns true if
+   * there are result rows. Otherwise, returns false.
 	 *
 	 * @param callable $doFn
 	 * @return bool

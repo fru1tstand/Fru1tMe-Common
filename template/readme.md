@@ -1,146 +1,115 @@
-## `common\template`
-Super simple (fast and lightweight) PHP templating.
+## `me\fru1t\common\template`
+Super simple (fast and lightweight) PHP templating and routing.
 
-#### Why this?
-+ No {{handlebar}} string replacements means FAST non-cached content.
-+ User control over rendering allows reusable template fragments (templates within templates within templates).
-+ MySQL integration enables loading templates directly from the database.
-+ JSON output for AJAX supported websites.
-+ Strong template definition enables content guarantees.
+#### Why use this?
++ Severely reduce boilerplate code.
++ Eliminate the need for state checking (eg. session starting, database connection handling, etc).
++ URL Routing with pretty URLs.
++ No {{handlebar}} string replacements means FAST dynamic content.
++ User control over rendering allows reusable template fragments (templates within templates within
+  templates).
++ MySQL integration enables loading templates directly from a database.
++ JSON requesting for AJAX supporting websites.
+
+#### What can be a template?
+Any repeated content (be it headers, footers, table rows, modules, etc) can be abstracted into a
+template. It's up to the developer how abstract they want to get. There is no limit! A template
+simply holds placeholder variables that are filled in when the template is rendered. User accessible
+pages are essentially a template who's rendering is printed (echo'd).
 
 #### Setup
-The project structure should be set up in such a way that the Content pages are what are being navigated to. I like to use a `.htaccess` file that looks like
+No `#setup` function call is required; however, the command `TemplateRouter::openContentFileFromUrl`
+should be executed after all setup calls.
+
+###### Project Structure
 ```
+project-root/  <-- (usually version control root [eg. git])
+  └ php/  <-- (php namespace root)
+  | └ me/fru1t/common/  <-- (The fru1tme common library location + this templating plugin)
+  | └ your/namespace/  <-- (Your php files)
+  |   └ templates/  <-- (Template files you declare)
+  |   └ content/  <-- (Folder/Namespace exclusively for publicly available pages)
+  └ javascript/  <-- (Whatever Javascript source files you have. This can also reside in /www if
+  |                   you don't use a Javascript compiler/substitute [eg. Closure, coffeescript].)
+  └ styles/  <-- (Whatever CSS source files you have. This can also reside in /www if you don't use
+  |               a CSS compiler/substitute [eg. SASS, Less].)
+  └ www/  <-- (Public root. Where apache points to. $_SERVER['DOCUMENT_ROOT'].)
+    └ index.php  <-- (Calls all setup and TemplateRouter::openContentFileFromUrl().)
+```
+This setup encourages separation of your source files (PHP, styles, JS) and publicly accessible
+pages.
+
+###### index.php
+```
+<?php
+define("PHP_ROOT", $_SERVER['DOCUMENT_ROOT'] . "/../php");
+
+// This defines the Autoload class which will automate all other class definition searches.
+require_once PHP_ROOT . "/me/fru1t/common/language/Autoload";
+
+// Tell PHP where to find things we're using.
+use me\fru1t\common\language\Autoload;
+use me\fru1t\common\language\Session;
+use me\fru1t\common\mysql\MySQL;
+use me\fru1t\common\template\TemplateRouter;
+
+// Autoload MUST be set up first.
+Autoload::setup(PHP_ROOT);
+
+// Optionally, other plugins.
+Session::setup("my-session-name");
+MySQL::setup("a.host.example", "a username", "a password", "example database");
+
+// Finally, load our content.
+TemplateRouter::openContentFileFromUrl("/../php/me/fru1t/example/", "index.php", "error.php");
+```
+Notice how, because
+1. index.php is the only file publicly available, thus, is always run (or Apache errors)
+2. Plugin setups are done before the content is loaded
+We can guarantee that the content file will have everything it needs from the get-go without any
+`include`s.
+
+#### How it works
+`TemplateRouter::openContentFileFromUrl` requires a "contentPath" parameter. The router will treat
+this passed directory path as an extension to the public www/ path, but without the direct access.
+This allows all requests to be routed through index.php, but still allows for a proper folder
+structure with folder nesting. Due to allowing nested folders, the router has some special handling
+with index.php and folders. For example, if a user were to visit `your-domain.tld/?page=some/page`,
+the router would attempt to find files in the following precedence:
+1. `<content dir>/some/page.php`
+2. `<content dir>/some/page/index.php`
+3. `<error file>:404`
+This means that if there were a file `<content dir>/page/index.php` AND
+`<content dir>/some/page.php`. Only the `page.php` file would ever be seen by users.
+
+###### Pretty URLs
+Instead of ugly `example.com/?page=mypage`, you want `example.com/mypage`. Simply use an .htaccess
+file or similar, in the root public directory, with the following setup:
+```
+# Enable RewriteEngine from Apache
 RewriteEngine On
-RewriteRule ^\.site/.+ - [L,NC]
+
+# Ignore direct file requests (for things like stylesheets or javascript if they're hosted locally)
+# L means to stop at this rule if the regex match succeeds
+# NC means ignore case
+RewriteRule ^.+\..+$ - [L,NC]
+
+# Rewrite everything after the root domain slash as a parameter called "page".
+# L means to stop at this rule if the regex match succeeds
+# QSA means keep any existing parameters mapped (query string append). This removes any leading
+#     question marks denoting the start of a query string, and replaces them with an ampersand.
 RewriteRule ^([^?.]+)(\?.+)?$ /index.php?page=$1 [L,QSA]
 ```
-
-With an index.php file at the root directory `/index.php` that looks like
-```php
-<?php
-require_once $_SERVER['DOCUMENT_ROOT'] . '/.site/php/<project>/Setup.php';
-use common\template\TemplateUtils;
-
-TemplateUtils::renderContentFromUrl(
-		$_SERVER['DOCUMENT_ROOT'] . "/.site/php/<project>/html/content",
-		"/index.php");
-
-```
-
-This way, a request to `domain.tld/foo/bar` will keep the pretty URL, but be translated into `domain.tld/index.php?page=foo/bar`.
-The templating engine will then look inside `/.site/php/<project>/html/content` for to find `foo/bar.php` or `foo/bar/index.php`
+  
+This .htaccess file silently rewrites anything not a direct file access, into a query routed through
+index.php. A URL like `example.com/some/page/?foo=bar` would be rewritten internally to be
+`example.com/?page=some/page&foo=bar`.  
+  
+Note that it's possible to change the parameter "page" into something else. One must specify the
+parameter name when calling `TemplateRouter::openContentFileFromUrl` under `pageParameterName`.  
+  
+To learn more about RewriteRule see
+[Apache's RewriteRule](https://httpd.apache.org/docs/current/rewrite/flags.html)  
 
 #### Examples
-###### Static website that has multiple pages (re-uses header, footer, etc)
-```php
-// /.site/php/<project>/html/template/StaticPage.php (the template)
-<?php
-namespace <project>\html\template;
-require_once $_SERVER['DOCUMENT_ROOT'] . '/.site/php/<project>/Setup.php';
-use common\template\component\ContentField;
-use common\template\component\TemplateField;
-use common\template\Content;
-
-class StaticPage extends Content {
-	const FIELD_BODY = "body";
-	const FIELD_TITLE = "title";
-
-	public static function getTemplateRenderContents(array $fields): string {
-		return <<<HTML
-<!DOCTYPE html>
-<html lang="en">
-<head>
-	<title>{$fields[self::FIELD_TITLE]}</title>
-	<meta charset="UTF-8" />
-</head>
-<body>
-	<nav>...</nav>
-	<div id="global-content">{$fields[self::FIELD_BODY]}</div>
-	<footer>...</footer>
-</body>
-</html>
-HTML;
-	}
-
-	public static function getTemplateFields_Internal(): array {
-		return [
-				TemplateField::newBuilder()->called(self::FIELD_BODY)->asRequired()->build(),
-				TemplateField::newBuilder()->called(self::FIELD_TITLE)->asRequired()->build()
-		];
-	}
-}
-```
-
-```php
-// /.site/php/<project>/html/content/index.php (content page)
-<?php
-namespace <project>\html\content;
-require_once $_SERVER['DOCUMENT_ROOT'] . '/.site/php/<project>/Setup.php';
-use <project>\html\template\StaticPage;
-
-$body = <<<HTML
-<h1>Hi welcome to <project></h1>
-HTML;
-
-StaticPage::createContent()
-	->with(StaticPage::FIELD_TITLE, "Home")
-	->with(StaticPage::FIELD_BODY, $body)
-	->render();
-```
-
-###### Loading content from a database
-```php
-// /.site/php/<project>/html/template/Card.php (template)
-<?php
-namespace <project>\html\template;
-require_once $_SERVER['DOCUMENT_ROOT'] . '/.site/php/<project>/Setup.php';
-use common\template\component\ContentField;
-use common\template\component\TemplateField;
-use common\template\Content;
-
-class Card extends Content {
-	const FIELD_TITLE = "title";
-	const DEFAULT_TITLE = "[No Title]";
-
-	public static function getTemplateRenderContents(array $fields): string {
-		$time = round((time() - $fields[self::FIELD_POST_DATE]->getContent()) / 60) - 1;
-		return <<<HTML
-<div>
-	<div class="title">{$fields[self::FIELD_TITLE]}</div>
-</div>
-HTML;
-	}
-
-	static function getTemplateFields_Internal(): array {
-		return [
-			TemplateField::newBuilder()->called(self::FIELD_TITLE)->asNotRequired()->defaultingTo(self::DEFAULT_TITLE)->build()
-		];
-	}
-}
-```
-
-```php
-// /.site/php/<project>/html/content/index.php (content page)
-<?php
-namespace <project>\html\content;
-require_once $_SERVER['DOCUMENT_ROOT'] . '/.site/php/<project>/Setup.php';
-use <project>\html\template\StaticPage;
-use <project>\html\template\Card;
-
-$cards = Card::createContentsFromQuery("SELECT title AS " . Card::FIELD_TITLE . " FROM card");
-$cardHtml = "";
-foreach ($cards as $card) {
-	$cardHtml .= $card->getRenderContents();
-}
-
-$body = <<<HTML
-<h1>Hi welcome to <project></h1>
-<div>$cardHtml</div>
-HTML;
-
-StaticPage::createContent()
-	->with(StaticPage::FIELD_TITLE, "Home")
-	->with(StaticPage::FIELD_BODY, $body)
-	->render();
-```
+See the `examples` subdirectory.

@@ -1,34 +1,43 @@
 <?php
-namespace common\mysql;
-use common\base\Preconditions;
+namespace me\fru1t\common\mysql;
+use me\fru1t\common\language\Preconditions;
 use mysqli;
 use mysqli_sql_exception;
 
 /**
- * Class MySQL
+ * Wraps the mysqli object in a singleton instance.
  */
 class MySQL {
 	const CHARSET_UTF_8 = "utf8";
 
-	/** @type mysqli */
+	/** @var mysqli|null */
 	private static $connection = null;
 
+  /** @var string|null */
 	private static $host = null;
+  /** @var string|null */
 	private static $username = null;
+  /** @var string|null */
 	private static $password = null;
+  /** @var string|null */
 	private static $schema = null;
+  /** @var string|null */
 	private static $charset = null;
 
 	/**
-	 * Sets up the current session's mysql connection.
+	 * Defines the mysqli connection that will be established for this session. Requires host,
+   * username, password, and schema (database) to connect to. This class only supports a single
+   * instance/connection to the database. If more than 1 connection or databases are required, do
+   * not use this class.
 	 *
-	 * @param string $host
-	 * @param string $username
-	 * @param string $password
-	 * @param string $schema
-	 * @param string $charset
+	 * @param string $host The network address to connect to.
+	 * @param string $username The username credentials to use.
+	 * @param string $password The password for the credentials.
+	 * @param string $schema The schema (database) name to connect to.
+	 * @param string $charset (optional) Defaults to {@link MySQL::CHARSET_UTF_8}
 	 */
-	public static function setup(string $host,
+	public static function setup(
+			string $host,
 			string $username,
 			string $password,
 			string $schema,
@@ -42,6 +51,7 @@ class MySQL {
 
 	/**
 	 * Creates and returns a new query builder with this session's mysql connection.
+	 *
 	 * @return QueryBuilder
 	 */
 	public static function newQueryBuilder(): QueryBuilder {
@@ -50,8 +60,7 @@ class MySQL {
 
 	private static function getConnection(): mysqli {
 		if (is_null(self::$connection)) {
-			if (Preconditions::isNull(self::$host, self::$username, self::$password,
-					self::$schema)) {
+			if (Preconditions::isNull(self::$host, self::$username, self::$password, self::$schema)) {
 				throw new mysqli_sql_exception("MySQL was never set up with database credentials");
 			}
 
@@ -61,4 +70,9 @@ class MySQL {
 		}
 		return self::$connection;
 	}
+
+	/**
+	 * Non-instantiable
+	 */
+	private function __construct() { }
 }

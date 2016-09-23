@@ -1,8 +1,8 @@
 <?php
-namespace common\template\component;
+namespace me\fru1t\common\template;
 
 /**
- * Class ContentField
+ * ContentFields are the values that fit into TemplateField locations within a template.
  */
 class ContentField {
 	/**
@@ -15,19 +15,18 @@ class ContentField {
 		return new ContentField($templateField);
 	}
 
-
 	/** @type TemplateField */
 	private $templateField;
 	/** @type string */
 	private $content;
 
-	/**
-	 * Use {@link ContentField::newBuilder}.
-	 *
-	 * @param TemplateField $templateField
-	 * @param string $content
-	 * @internal
-	 */
+  /**
+   * Creates a new ContentField given a TemplateField and optionally, content. Consider using
+   * {@link ContentField::of(TemplateField)} for stylistic purposes.
+   *
+   * @param TemplateField $templateField
+   * @param string|null $content (optional)
+   */
 	public function __construct(TemplateField $templateField, string $content = null) {
 		$this->templateField = $templateField;
 		$this->content = $content;
@@ -41,16 +40,17 @@ class ContentField {
 	}
 
 	/**
-	 * Guaranteed to always return a string.
+   * Returns the value of this ContentField, or the default value of the TemplateField if no content
+   * was given.
 	 *
 	 * @return string
 	 */
 	public function getContent(): string {
-		return ($this->hasContent()) ? $this->content : $this->templateField->getDefault();
+		return ($this->hasContent()) ? $this->content : $this->templateField->getDefaultValue();
 	}
 
 	/**
-	 * Sets this content field's content
+	 * Sets the value to be retrieved from the ContentField.
 	 *
 	 * @param string $content
 	 */

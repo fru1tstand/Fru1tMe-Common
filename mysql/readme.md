@@ -1,8 +1,8 @@
-## `common\mysql`
+## `me\fru1t\common\mysql`
 Provides abstract mysql interfacing using the MySQLi extension.
 
 #### Setup
-`MySQL::setup(...)`. Uses `common\base`.
+Use `MySQL::setup(...)`. 
 
 #### Examples
 ###### Get a single setting from the database
@@ -24,10 +24,10 @@ echo $row['value'];
 Fru1tMe Method:  
 ```php
 echo MySQL::newQueryBuilder()
-		->withQuery("SELECT `lobby_id` FROM `lobby_post` WHERE `id` = ?")
-		->withParam($dbId, QueryBuilder::PARAM_TYPE_INT)
-		->build()
-		->getResultValue();
+        ->withQuery("SELECT lobby_id FROM lobby_post WHERE id = ?")
+        ->withParam($dbId, QueryBuilder::PARAM_TYPE_INT)
+        ->build()
+        ->getResultValue();
 ```
 
 ###### List all users
@@ -41,16 +41,16 @@ $stmt->execute();
 $result = $stmt->get_result();
 $stmt->close();
 while ($row = $result->fetch_assoc()) {
-	produceUserHtml($row);
+    produceUserHtml($row);
 }
 ```
 
 Fru1tMe Method:  
 ```php
 MySQL::newQueryBuilder()
-		->withQuery("SELECT username, first_name, last_name FROM users")
-		->build()
-		->forEachResult(function($row) {
-			produceUserHtml($row);
-		});
+        ->withQuery("SELECT username, first_name, last_name FROM users")
+        ->build()
+        ->forEachResult(function($row) {
+            produceUserHtml($row);
+        });
 ```

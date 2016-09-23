@@ -1,12 +1,11 @@
 <?php
-namespace common\session;
+namespace me\fru1t\common\language;
+use RuntimeException;
 
 /**
- * Handles session data
- * @version 0.2
+ * Handles interfacing with PHP sessions.
  */
 class Session {
-	//Single static instance
 	private function __construct() {}
 	private static $hasSessionStarted = false;
 
@@ -17,7 +16,7 @@ class Session {
 	 */
 	public static function setup(string $sessionName) {
 		if (self::$hasSessionStarted) {
-			return;
+			throw new RuntimeException("Session cannot be setup twice.");
 		}
 
 		self::$hasSessionStarted = true;
@@ -36,9 +35,7 @@ class Session {
 	 * @return boolean False if the session doesn't exist; otherwise, true
 	 */
 	public static function set(string $key, $value): bool {
-		if (!self::$hasSessionStarted) {
-			return false;
-		}
+    self::checkSetup();
 
 		$_SESSION[$key] = $value;
 		return true;
@@ -49,9 +46,11 @@ class Session {
 	 * started. Returns values as stored (arrays, serialized objects, etc).
 	 *
 	 * @param string $key The key to get
-	 * @return mixed The value at key if both the key and session exist; otherwise, null
+	 * @return mixed|null The value at key if both the key and session exist; otherwise, null
 	 */
 	public static function get($key) {
+    self::checkSetup();
+
 		if (!self::exists($key)) {
 			return null;
 		}
@@ -67,6 +66,8 @@ class Session {
 	 * @return boolean False if the session doesn't exist; otherwise, true
 	 */
 	public static function delete($key): bool {
+	  self::checkSetup();
+
 		if (!self::exists($key)) {
 			return false;
 		}
@@ -82,11 +83,14 @@ class Session {
 	 * @return bool
 	 */
 	public static function exists(string $key): bool {
-		if (!self::$hasSessionStarted) {
-			return false;
-		}
+    self::checkSetup();
 
 		return isset($_SESSION[$key]);
 	}
+
+	private static function checkSetup() {
+    if (!self::$hasSessionStarted) {
+      throw new RuntimeException("Session hasn't been set up. See Session::setup.");
+    }
+  }
 }
-?>

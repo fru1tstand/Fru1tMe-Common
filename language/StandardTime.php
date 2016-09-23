@@ -1,10 +1,9 @@
 <?php
-namespace common\time;
+namespace me\fru1t\common\language;
 
 /**
  * Unifies timezones by providing methods of converting back and forth between UTC+0 and whatever
- * timezone you choose to be in
- * @package common\time
+ * timezone you choose to be in. StandardTime only uses Seconds.
  */
 class StandardTime {
 	// Constants
@@ -15,7 +14,9 @@ class StandardTime {
 
 	// Conversion methods
 	/**
-	 * Converts the passed time from whatever UTC timezone it was in, to UTC+0
+	 * Converts the passed time from whatever UTC timezone it was in, to UTC+0, in Seconds from the
+   * unix epoch.
+   *
 	 * @param int $time
 	 * @param int $from
 	 * @return int
@@ -25,7 +26,8 @@ class StandardTime {
 	}
 
 	/**
-	 * Converts the passed time from UTC+0 to the requested timezone
+	 * Converts the passed time from UTC+0 to the requested timezone, in Seconds from the unix epoch.
+   *
 	 * @param int $time
 	 * @param int $to
 	 * @return int
@@ -35,6 +37,9 @@ class StandardTime {
 	}
 
 	/**
+   * Converts the passed time from a specified timezone to the requsted timezone, in second from the
+   * unix epoch.
+   *
 	 * @param int $time
 	 * @param int $from UTC timezone that the passed time is in
 	 * @param int $to UTC timezone that you want
@@ -45,10 +50,9 @@ class StandardTime {
 		return $time + (60 * 60 * ($to - $from));
 	}
 
-
-	// Convenience methods
 	/**
-	 * Gets the current UTC+0 time.
+	 * Gets the current UTC+0 time in seconds from the unix epoch.
+   *
 	 * @return int
 	 */
 	public static function getTime(): int {
@@ -58,7 +62,8 @@ class StandardTime {
 	}
 
 	/**
-	 * Returns the date portion of the given time
+	 * Returns the date portion of the given time in seconds from the unix epoch.
+   *
 	 * @param int $time
 	 * @return int
 	 */

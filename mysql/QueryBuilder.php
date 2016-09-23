@@ -1,13 +1,12 @@
 <?php
-namespace common\mysql;
+namespace me\fru1t\common\mysql;
 use Exception;
 use mysqli;
 use mysqli_sql_exception;
 use ReflectionClass;
 
 /**
- * Provides convenience methods to create and prepare MySQLi statements
- * @version 0.1
+ * A builder for mysql queries which enforces the use of prepared statements.
  */
 class QueryBuilder {
 	const PARAM_TYPE_STRING = "s";
@@ -23,7 +22,7 @@ class QueryBuilder {
 	private $sqlConnectionReference;
 
 	/**
-	 * Creates a new instance of a QueryBuilder using a provided MySQLI instance
+	 * Creates a new QueryBuilder object from the given mysqli instance.
 	 *
 	 * @param mysqli $conn
 	 */
@@ -34,10 +33,12 @@ class QueryBuilder {
 	}
 
 	/**
-	 * Specifies the text to use as the query
+	 * An sql query in the form of a prepared statement. Most notably, the replacement of parameters
+	 * with question marks (?). See link for more details.
 	 *
+	 * @see http://php.net/manual/en/mysqli.prepare.php
 	 * @param string $queryString
-	 * @return self
+   * @return QueryBuilder this
 	 */
 	public function withQuery(string $queryString): self {
 		$this->queryString = $queryString;
@@ -50,7 +51,7 @@ class QueryBuilder {
 	 *
 	 * @param mixed $paramValue
 	 * @param string $paramType Use QueryBuilder::PARAM_TYPE_*
-	 * @return self
+   * @return QueryBuilder this
 	 */
 	public function withParam($paramValue, string $paramType): self {
 		$this->queryParams[] = array(
@@ -59,6 +60,17 @@ class QueryBuilder {
 		);
 		return $this;
 	}
+
+  /**
+   * Specifies a parameter that defines a string for a "LIKE" clause, padding it with the "%"
+   * wildcard on both ends (zero or more of any character).
+   *
+   * @param string $likeParamValue
+   * @return QueryBuilder this
+   */
+	public function withLikeParam(string $likeParamValue): self {
+	  return $this->withParam("&$likeParamValue%", self::PARAM_TYPE_STRING);
+  }
 
 	/**
 	 * Prepares the query, bind the parameters, and spits out a QueryResult
