@@ -159,7 +159,6 @@ class TemplateRouter {
 	/**
 	 * @param string $path
 	 * @return bool
-	 * @throws TemplateException
 	 */
 	private static function openContentFileFromPath(string $path): bool {
 		if (!is_file($path)) {

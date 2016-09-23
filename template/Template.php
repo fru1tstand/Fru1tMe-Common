@@ -25,8 +25,6 @@ abstract class Template implements TemplateInterface {
 	 * Creates a new template page to produce content with.
 	 *
 	 * @return Template
-	 * @throws TemplateException Thrown if you're using this class incorrectly. Doubt you'll see
-	 *     it. But sometimes it's late or something.
 	 */
 	public static final function start(): Template {
 		if (static::class == self::class) {
@@ -114,7 +112,7 @@ abstract class Template implements TemplateInterface {
 	private final function __construct() {
 		$this->contentFields = [];
 		foreach (self::getTemplateFields() as $templateField) {
-			$this->contentFields[$templateField->getName()] = $templateField->newContentField();
+			$this->contentFields[$templateField->getId()] = $templateField->newContentField();
 		}
 	}
 
