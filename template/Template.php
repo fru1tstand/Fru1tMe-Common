@@ -1,25 +1,19 @@
 <?php
 namespace me\fru1t\common\template;
+use me\fru1t\common\language\Http;
 use me\fru1t\common\mysql\QueryResult;
+use RuntimeException;
 
 /**
  * Provides the base methods for creating and displaying a template with associated content.
  * Contains control structures to render as JSON-only.
  */
 abstract class Template implements TemplateInterface {
-	/** Renders the template and content as plain text HTML (default) */
-	const RENDER_FORMAT_ALL_HTML = 1;
-	/** Renders solely the content field as JSON */
-	const RENDER_FORMAT_CONTENT_ONLY_JSON = 2;
-
 	/** The name for the key in the json output array that specifies the template name */
 	const JSON_TEMPLATE_KEY = "template";
 
 	/** @var TemplateField[][] */
 	private static $templateFields = null;
-
-	/** @type int Holds the render options for content rendering */
-	private static $renderFormat = self::RENDER_FORMAT_ALL_HTML;
 
 	/**
 	 * Creates a new template page to produce content with.
@@ -28,7 +22,7 @@ abstract class Template implements TemplateInterface {
 	 */
 	public static final function start(): Template {
 		if (static::class == self::class) {
-      throw new TemplateException("You're trying to create a new content page without"
+      throw new RuntimeException("You're trying to create a new content page without"
           . " specifying the template to use. Try calling #create through the template (eg."
           . " TemplateName::create()) where TemplateName is the class that extends Template.");
     }
@@ -60,7 +54,7 @@ abstract class Template implements TemplateInterface {
    */
 	public static final function createFromQueryResult(QueryResult $queryResult): array {
 	  if (static::class == self::class) {
-      throw new TemplateException("You're trying to make content without saying which template"
+      throw new RuntimeException("You're trying to make content without saying which template"
           . " you want to use Try calling #createFromQueryResult through the template (eg."
           . " TemplateName::createFromQueryResult()) where TemplateName is the class that extends"
           . " Template.");
@@ -80,7 +74,7 @@ abstract class Template implements TemplateInterface {
 	 */
 	public static final function getTemplateFields(): array {
 		if (static::class == self::class) {
-      throw new TemplateException("You're trying to get template fields without specifying"
+      throw new RuntimeException("You're trying to get template fields without specifying"
           . " the template you want from. Try calling #getTemplateFields through the template (eg."
           . " TemplateName::getTemplateFields()) where TemplateName is the class that extends"
           . " Template.");
@@ -89,17 +83,6 @@ abstract class Template implements TemplateInterface {
 			self::$templateFields[static::class] = static::getTemplateFields_internal();
 		}
 		return self::$templateFields[static::class];
-	}
-
-	/**
-	 * Sets the render format for all content pages. This will effect all subsequent renderings so
-	 * setting this multiple times may be necessary. Use the RENDER_FORMAT constants defined in
-	 * this class. An invalid value will default to RENDER_FORMAT_ALL_HTML.
-	 *
-	 * @param int $renderFormat
-	 */
-	public static final function setRenderFormat(int $renderFormat) {
-		self::$renderFormat = $renderFormat;
 	}
 
 
@@ -125,10 +108,10 @@ abstract class Template implements TemplateInterface {
 	 */
 	public final function with(string $fieldId, string $content = null): Template {
 		if (!isset($this->contentFields[$fieldId])) {
-			throw new TemplateException("$fieldId doesn't exist in " . static::class);
+			throw new RuntimeException("$fieldId doesn't exist in " . static::class);
 		}
 		if ($this->contentFields[$fieldId]->hasContent()) {
-			throw new TemplateException("$fieldId is already set for " . static::class);
+			throw new RuntimeException("$fieldId is already set for " . static::class);
 		}
 
 		$this->contentFields[$fieldId]->setContent($content);
@@ -147,26 +130,27 @@ abstract class Template implements TemplateInterface {
 	public final function render(bool $outputNow = true, bool $forceHtml = false) {
     foreach ($this->contentFields as $contentField) {
       if ($contentField->getTemplateField()->isRequired() && !$contentField->hasContent()) {
-        throw new TemplateException(
+        throw new RuntimeException(
             $contentField->getTemplateField()->getId() . " is required for this template.");
       }
     }
 
-    $promisedRenderFormat = $forceHtml ? self::RENDER_FORMAT_ALL_HTML : self::$renderFormat;
+    $promisedRenderFormat = $forceHtml ? Templates::FORMAT_HTML : Templates::getRenderFormat();
     $output = null;
     switch($promisedRenderFormat) {
       // Output JSON
-      case self::RENDER_FORMAT_CONTENT_ONLY_JSON:
+      case Templates::FORMAT_JSON:
         $jsonArray = [];
         foreach ($this->contentFields as $key => $field) {
           $jsonArray[$key] = $field->getContent();
         }
         $jsonArray[self::JSON_TEMPLATE_KEY] = static::class;
         $output = json_encode($jsonArray);
+        header(Http::HEADER_CONTENT_TYPE_JSON);
         break;
 
       // Output HTML
-      case self::RENDER_FORMAT_ALL_HTML:
+      case Templates::FORMAT_HTML:
       default:
         $output = static::getTemplateRenderContents_internal($this->contentFields);
         break;

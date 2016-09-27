@@ -14,5 +14,8 @@ session states.
 Cleans up the `mysqli` and `mysqli_stmt` objects to reduce boilerplate code for interfacing with
 mysql databases.
 
+### Router
+Centralized PHP routing to protect files and create setup guarantees.
+
 ### Template
-Provides a lightweight templating and routing engine.
+Provides a lightweight templating framework that vastly outperforms the current market.

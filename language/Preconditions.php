@@ -33,6 +33,33 @@ class Preconditions {
 		return false;
 	}
 
+  /**
+   * Checks if the given object is any of the given values.
+   *
+   * @param $obj
+   * @param array $values
+   * @return bool
+   */
+  public static function isAnyOf($obj, array $values): bool {
+    foreach ($values as $value) {
+      if ($obj === $value) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+	// String manipulations
+  /**
+   * Checks if a given string is null, empty, or just whitespace.
+   *
+   * @param string $str
+   * @return bool
+   */
+  public static function isNullEmptyOrWhitespace($str): bool {
+    return self::isNull($str) || strlen(preg_replace('[^\S]', '', $str)) == 0;
+  }
+
 	// Standardized naming/aliasing.
   /**
    * @see is_dir()

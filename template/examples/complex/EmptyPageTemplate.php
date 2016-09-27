@@ -43,6 +43,9 @@ HTML;
    * @return TemplateField[]
    */
   static function getTemplateFields_internal(): array {
-    // TODO: Implement getTemplateFields_internal() method.
+    return [
+        TemplateField::newBuilder()->called(self::FIELD_HEAD_TITLE)->asRequired()->build(),
+        TemplateField::newBuilder()->called(self::FIELD_BODY)->asRequired()->build()
+    ];
   }
 }

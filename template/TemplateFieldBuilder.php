@@ -1,5 +1,6 @@
 <?php
 namespace me\fru1t\common\template;
+use RuntimeException;
 
 /**
  * The builder to {@link TemplateField}.
@@ -61,7 +62,7 @@ class TemplateFieldBuilder {
 	 */
 	public function build(): TemplateField {
 	  if ($this->isRequired && $this->defaultValue != null) {
-	    throw new TemplateException("A default value cannot be given to a required template field.");
+	    throw new RuntimeException("A default value cannot be given to a required template field.");
     }
 
 		return new TemplateField($this->id, $this->isRequired, $this->defaultValue);

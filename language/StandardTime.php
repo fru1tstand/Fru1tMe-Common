@@ -37,7 +37,7 @@ class StandardTime {
 	}
 
 	/**
-   * Converts the passed time from a specified timezone to the requsted timezone, in second from the
+   * Converts the passed time from a specified timezone to the requested timezone, in second from the
    * unix epoch.
    *
 	 * @param int $time

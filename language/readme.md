@@ -10,18 +10,21 @@ auto-loading, which removes this requirement. By simply structuring your PHP fil
 a Java-like manor (ie. a folder for each namespace, with the file name equal to the declared class),
 one can tell PHP to automatically "include" a given class.  
   
-Use `Autoload::setup` to setup.
+Use `Autoload::setup(string)` to set up auto loading with the given php path.
+
+#### Http
+Contains constants that revolve around HTTP headers and responses.
 
 #### Param
 Interface with PHP's GET and POST global variables in an exception-safe way.
 
 #### Preconditions
-High frequency checks and standardized naming.
+High-frequency-use checks and standardized naming.
 
 #### Session
 Interfaces with the php session manager to store/retrieve data within a session.  
   
-Use `Session::setup` to setup.
+Use `Session::setup(string)` to set up a session with the given name.
 
 #### StandardTime
 Easily manipulate timestamps into a standardized format for storage, retrieval, etc.
