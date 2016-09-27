@@ -106,9 +106,11 @@ This allows all requests to be routed through index.php, but still allows for a 
 structure with folder nesting. Due to allowing nested folders, the router has some special handling
 with index.php and folders. For example, if a user were to visit `your-domain.tld/?page=some/page`,
 the router would attempt to find files in the following precedence:
+
 1. `<content dir>/some/page.php`
 2. `<content dir>/some/page/index.php`
 3. `<error file>:404`
+
 This means that if there were a file `<content dir>/page/index.php` AND
 `<content dir>/some/page.php`. Only the `page.php` file would ever be seen by users.
 
