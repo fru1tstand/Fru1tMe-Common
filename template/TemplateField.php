@@ -71,7 +71,7 @@ class TemplateField {
    * @return string
    */
   public function getDefaultValue() {
-    return $this->defaultValue ?? "";
+    return $this->defaultValue ?? '';
   }
 
 	/**
