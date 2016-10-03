@@ -16,6 +16,20 @@ class TemplateField {
 		return new TemplateFieldBuilder();
 	}
 
+  /**
+   * Returns an array of required TemplateFields given names.
+   *
+   * @param string[] ...$names
+   * @return TemplateField[]
+   */
+	public static function createFrom(string... $names): array {
+	  $return = [];
+    foreach ($names as $name) {
+      $return[] = TemplateField::newBuilder()->called($name)->asRequired()->build();
+    }
+    return $return;
+  }
+
 	/** @type string */
 	private $id;
 	/** @type bool */
