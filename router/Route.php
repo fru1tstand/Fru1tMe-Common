@@ -9,11 +9,28 @@ use RuntimeException;
 class Route {
   /**
    * Creates a new instance of Route.
-   *
    * @return Route
    */
   public static function newBuilder(): Route {
     return new Route();
+  }
+
+  /**
+   * Creates and builds a route given a request and location.
+   * @param string $request The request string to catch. The request should omit the domain name and
+   *     and trailing slash. For example, to handle "http://example.com/thing.ext", one would set
+   *     the request to "thing.ext"
+   * @param string $location The path and filename of the file to serve.
+   * @param null|string $header Optional headers to send with the file.
+   * @return Route A built route object.
+   */
+  public static function create(string $request, string $location, $header = null) {
+    $route = new Route();
+    $route->whenRequested($request)->provide($location);
+    if (!Preconditions::isNullEmptyOrWhitespace($header)) {
+      $route->withHeader($header);
+    }
+    return $route->build();
   }
 
   /**
@@ -37,7 +54,6 @@ class Route {
 
   /**
    * Returns whether or not this route has been built.
-   *
    * @return bool
    */
   public function isBuilt(): bool {
@@ -61,7 +77,6 @@ class Route {
   /**
    * Specifies the URL with which to activate this route for. Do not include a leading or trailing
    * slash.
-   *
    * @param string $address
    * @return Route
    */
@@ -72,7 +87,6 @@ class Route {
 
   /**
    * Specifies the file to provide.
-   *
    * @param string $filePath The file path, relative to web root (DOCUMENT_ROOT). Allows the use of
    * parent directory paths (eg. "../some/file.txt").
    * @return Route
@@ -84,7 +98,6 @@ class Route {
 
   /**
    * Sets a single optional header to send with the given static content.
-   *
    * @param string $header
    * @return Route
    */
@@ -95,7 +108,6 @@ class Route {
 
   /**
    * Validates and returns this Route for use in the Router.
-   *
    * @return Route
    */
   public function build(): Route {
@@ -109,7 +121,6 @@ class Route {
   /**
    * Checks this route to see if the file requested is this route. If the match succeeds, it will
    * include the resolve file and completely exit PHP execution.
-   *
    * @param $fileRequested
    */
   public function navigate($fileRequested) {
