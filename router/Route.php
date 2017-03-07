@@ -24,7 +24,7 @@ class Route {
    * @param null|string $header Optional headers to send with the file.
    * @return Route A built route object.
    */
-  public static function create(string $request, string $location, $header = null) {
+  public static function create(string $request, string $location, $header = null): Route {
     $route = new Route();
     $route->whenRequested($request)->provide($location);
     if (!Preconditions::isNullEmptyOrWhitespace($header)) {
@@ -63,14 +63,14 @@ class Route {
   /**
    * @return null|string
    */
-  public function getRequest() {
+  public function getRequest(): ?string {
     return $this->request;
   }
 
   /**
    * @return null|string
    */
-  public function getResolve() {
+  public function getResolve(): ?string {
     return $this->resolve;
   }
 
@@ -123,7 +123,7 @@ class Route {
    * include the resolve file and completely exit PHP execution.
    * @param $fileRequested
    */
-  public function navigate($fileRequested) {
+  public function navigate($fileRequested): void {
     if ($this->request === $fileRequested) {
       if (!Preconditions::isNullEmptyOrWhitespace($this->header)) {
         header($this->header);

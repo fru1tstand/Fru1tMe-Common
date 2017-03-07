@@ -14,7 +14,8 @@ class TemplateFieldBuilder {
   private $defaultValue;
 
   /**
-   * Creates a new, empty instance of TemplateFieldBuilder.
+   * Creates a new, empty instance of TemplateFieldBuilder that defaults to a non-required field
+   * and a null default value.
    */
 	public function __construct() {
 		$this->id = null;
@@ -24,7 +25,6 @@ class TemplateFieldBuilder {
 
 	/**
 	 * Sets the id of this TemplateField which is used to identify it in the template.
-	 *
 	 * @param string $id
 	 * @return TemplateFieldBuilder this
 	 */
@@ -36,7 +36,6 @@ class TemplateFieldBuilder {
   /**
    * Sets this field as being required which will cause the template engine to throw an error
    * if content for this field is not provided upon rendering.
-   *
    * @return TemplateFieldBuilder this
    */
   public function asRequired(): TemplateFieldBuilder {
@@ -46,18 +45,16 @@ class TemplateFieldBuilder {
 
 	/**
 	 * Sets the default value to use when a value isn't provided by the Content page.
-	 *
-	 * @param string $default
+	 * @param null|string $default
 	 * @return TemplateFieldBuilder this
 	 */
-	public function defaultingTo(string $default): TemplateFieldBuilder {
+	public function defaultingTo(?string $default): TemplateFieldBuilder {
 		$this->defaultValue = $default;
 		return $this;
 	}
 
 	/**
 	 * Checks and Builds this TemplateField.
-	 *
 	 * @return TemplateField
 	 */
 	public function build(): TemplateField {

@@ -28,7 +28,6 @@ class QueryResult {
 	 * Invokes the given callable, passing a single row as the sole parameter. Iterates through all
    * results in the order that it was received (respecting the ORDER BY clause). Returns true if
    * there are result rows. Otherwise, returns false.
-	 *
 	 * @param callable $doFn
 	 * @return bool
 	 */
@@ -51,10 +50,9 @@ class QueryResult {
 	 * Used for single-column, single-row lookup queries. Returns the value obtained from the query.
 	 * Returns null if 0 or more than 1 row resulted from the query. Returns the first column value
 	 * if multiple columns were defined within the query.
-	 *
-	 * @return string | null
+	 * @return string|null
 	 */
-	public function getResultValue() {
+	public function getResultValue(): ?string {
 		$result = $this->stmt->get_result();
 		$this->stmt->close();
 
@@ -70,10 +68,9 @@ class QueryResult {
 	 * Used for single-row lookup queries. Returns all column values obtained from the query in an
 	 * associative array mapping column name to values. Returns null if 0 or more than 1 row
 	 * resulted from the query.
-	 *
-	 * @return array | null
+	 * @return array|null
 	 */
-	public function getResultValues() {
+	public function getResultValues(): ?array {
 		$result = $this->stmt->get_result();
 		$this->stmt->close();
 

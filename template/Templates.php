@@ -30,7 +30,6 @@ final class Templates {
    * will ALWAYS return a valid render format specified by the constants in this class prefixed with
    * "FORMAT_*". Defaults to (@link Templates::FORMAT_HTML} if parameters are invalid or feature is
    * disabled.
-   *
    * @return string
    */
   public static function getRenderFormat(): string {
@@ -58,7 +57,7 @@ final class Templates {
     return self::FORMAT_HTML;
   }
 
-  private static function checkSetup() {
+  private static function checkSetup(): void {
     if (Preconditions::isNull(self::$templates)) {
       throw new RuntimeException("Templates was never set up. Please see Templates::setup().");
     }
@@ -66,10 +65,9 @@ final class Templates {
 
   /**
    * Starts the setup process for Template settings.
-   *
    * @return Templates
    */
-  public static function setup() {
+  public static function setup(): Templates {
     return new Templates();
   }
 
@@ -90,7 +88,6 @@ final class Templates {
   /**
    * Enables the output format to change from HTML to JSON or other implemented formats. This is
    * useful for AJAX loading.
-   *
    * @return Templates
    */
   public function enableFormatChanging(): Templates {
@@ -101,7 +98,6 @@ final class Templates {
   /**
    * Sets the templating engine to listen to this parameter to handle return formats. (eg. JSON,
    * HTML, etc).
-   *
    * @param string $formatParameterName
    * @return Templates
    */
@@ -113,7 +109,6 @@ final class Templates {
   /**
    * Allows the format parameter to be passed as GET request (in the URL) instead of solely POST. If
    * both parameters are passed, precedence will be given to the POST parameter.
-   *
    * @return Templates
    */
   public function allowFormatParameterAsGetRequest(): Templates {
@@ -124,7 +119,7 @@ final class Templates {
   /**
    * Finalizes (and validates) setup of Template settings.
    */
-  public function complete() {
+  public function complete(): void {
     if ($this->isFormatChangingEnabled
         && Preconditions::isNullEmptyOrWhitespace($this->formatParameterName)) {
       throw new RuntimeException("Format changing is enabled, but is not set up complete. Please"

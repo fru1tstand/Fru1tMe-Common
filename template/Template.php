@@ -17,7 +17,6 @@ abstract class Template implements TemplateInterface {
 
 	/**
 	 * Creates a new template page to produce content with.
-	 *
 	 * @return Template
 	 */
 	public static final function start(): Template {
@@ -34,7 +33,6 @@ abstract class Template implements TemplateInterface {
   /**
    * Creates a new template page given a map of content, keyed by TemplateField IDs, with values
    * of the content wanting to be rendered.
-   *
    * @param array $contents
    * @return Template
    */
@@ -48,7 +46,6 @@ abstract class Template implements TemplateInterface {
 
   /**
    * Creates as many templates as there are results from the query result.
-   *
    * @param QueryResult $queryResult
    * @return Template[]
    */
@@ -69,7 +66,6 @@ abstract class Template implements TemplateInterface {
 	/**
 	 * Returns the TemplateField objects associated to this content page. These are the fields
 	 * that are used within the template rendering method.
-	 *
 	 * @return TemplateField[]
 	 */
 	public static final function getTemplateFields(): array {
@@ -80,7 +76,7 @@ abstract class Template implements TemplateInterface {
           . " Template.");
     }
 		if (!isset(self::$templateFields[static::class])) {
-			self::$templateFields[static::class] = static::getTemplateFields_internal();
+			self::$templateFields[static::class] = static::getTemplateFields_internal() ?? [];
 		}
 		return self::$templateFields[static::class];
 	}
@@ -101,12 +97,11 @@ abstract class Template implements TemplateInterface {
 
 	/**
 	 * Specifies content for a given field for this content page.
-	 *
 	 * @param string $fieldId
-	 * @param string $content (optional) Defaults to null.
+	 * @param null|string $content (optional) Defaults to null.
 	 * @return Template
 	 */
-	public final function with(string $fieldId, string $content = null): Template {
+	public final function with(string $fieldId, ?string $content = null): Template {
 		if (!isset($this->contentFields[$fieldId])) {
 			throw new RuntimeException("$fieldId doesn't exist in " . static::class);
 		}
@@ -120,14 +115,13 @@ abstract class Template implements TemplateInterface {
 
   /**
    * Creates the HTML with the given content.
-   *
    * @param bool $outputNow (optional) Defaults to true. Sets whether or not calling this method
    *     will print the contents out onto the page at the immediate moment it's called.
    * @param bool $forceHtml (optional) Defaults to false. Forces the renderer to output HTML,
    *     regardless of global options. This is used primarily for template nesting.
    * @return string
    */
-	public final function render(bool $outputNow = true, bool $forceHtml = false) {
+	public final function render(bool $outputNow = true, bool $forceHtml = false): string {
     foreach ($this->contentFields as $contentField) {
       if ($contentField->getTemplateField()->isRequired() && !$contentField->hasContent()) {
         throw new RuntimeException(

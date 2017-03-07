@@ -9,7 +9,6 @@ namespace me\fru1t\common\template;
 class TemplateField {
 	/**
 	 * Creates a new TemplateFieldBuilder.
-	 *
 	 * @return TemplateFieldBuilder
 	 */
 	public static function newBuilder(): TemplateFieldBuilder {
@@ -18,7 +17,6 @@ class TemplateField {
 
   /**
    * Returns an array of required TemplateFields given names.
-   *
    * @param string[] ...$names
    * @return TemplateField[]
    */
@@ -40,7 +38,6 @@ class TemplateField {
   /**
    * Creates a new TemplateField with the given name, requirement, and default value. Consider using
    * {@link TemplateField::newBuilder()} for stylistic purposes.
-   *
    * @param string $id The identifier used for this template field.
    * @param bool $isRequired (optional) Defaults to false. Sets whether or not this template field
    *     is required for the template to render or not.
@@ -56,27 +53,26 @@ class TemplateField {
 	/**
 	 * @return string
 	 */
-	public function getId() {
+	public function getId(): string {
 		return $this->id;
 	}
 
 	/**
 	 * @return boolean
 	 */
-	public function isRequired() {
+	public function isRequired(): bool {
 		return $this->isRequired;
 	}
 
   /**
    * @return string
    */
-  public function getDefaultValue() {
+  public function getDefaultValue(): string {
     return $this->defaultValue ?? '';
   }
 
 	/**
 	 * Creates a new content field based on this template field.
-	 *
 	 * @return ContentField
 	 */
 	public function newContentField(): ContentField {

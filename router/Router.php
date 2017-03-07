@@ -121,7 +121,6 @@ final class Router {
    * <p>Pass path as a relative folder location from document root (not project root) without a
    * trailing or prefixing slash. Parent directory paths are valid and encouraged (to remove the
    * path from the web root). Mine, for example, is "../php".
-   *
    * @param string $path
    * @return Router
    */
@@ -132,7 +131,6 @@ final class Router {
 
   /**
    * Sets the default page to display when no page is specified via the page parameter.
-   *
    * @param string $defaultContentPagePath The path of the default content page, relative to the
    *     content directory.
    * @return Router
@@ -144,7 +142,6 @@ final class Router {
 
   /**
    * Sets the error page to display in case of client or server error (eg. 404 not found, etc).
-   *
    * @param string $errorPagePath The path of the error page, relative to the content directory.
    * @return Router
    */
@@ -155,7 +152,6 @@ final class Router {
 
   /**
    * Sets the name of the parameter that the router uses to determine the page requested.
-   *
    * @param string $pageParameterName
    * @return Router
    */
@@ -166,7 +162,6 @@ final class Router {
 
   /**
    * Adds the given route to the router.
-   *
    * @param Route $route
    * @return Router
    */

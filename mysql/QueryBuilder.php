@@ -23,7 +23,6 @@ class QueryBuilder {
 
 	/**
 	 * Creates a new QueryBuilder object from the given mysqli instance.
-	 *
 	 * @param mysqli $conn
 	 */
 	public function __construct(mysqli $conn) {
@@ -35,7 +34,6 @@ class QueryBuilder {
 	/**
 	 * An sql query in the form of a prepared statement. Most notably, the replacement of parameters
 	 * with question marks (?). See link for more details.
-	 *
 	 * @see http://php.net/manual/en/mysqli.prepare.php
 	 * @param string $queryString
    * @return QueryBuilder this
@@ -48,7 +46,6 @@ class QueryBuilder {
 	/**
 	 * Specifies a parameter. These must come in the order they appear
 	 * in the text query.
-	 *
 	 * @param mixed $paramValue
 	 * @param string $paramType Use QueryBuilder::PARAM_TYPE_*
    * @return QueryBuilder this
@@ -64,7 +61,6 @@ class QueryBuilder {
   /**
    * Specifies a parameter that defines a string for a "LIKE" clause, padding it with the "%"
    * wildcard on both ends (zero or more of any character).
-   *
    * @param string $likeParamValue
    * @return QueryBuilder this
    */
@@ -74,7 +70,6 @@ class QueryBuilder {
 
 	/**
 	 * Prepares the query, bind the parameters, and spits out a QueryResult
-	 *
 	 * @throws Exception If the query string was not set
 	 * @throws mysqli_sql_exception If the statement could not prepared
 	 * @return QueryResult

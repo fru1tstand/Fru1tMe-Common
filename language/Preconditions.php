@@ -7,7 +7,6 @@ namespace me\fru1t\common\language;
 class Preconditions {
 	/**
 	 * Returns true if the passed parameter is not null and has elements.
-	 *
 	 * @param mixed $array
 	 * @return bool
 	 */
@@ -19,7 +18,6 @@ class Preconditions {
 	 * Check if one or more variables are null. Returns true on the first encountered null variable.
 	 * Otherwise, returns true. Passing an array will NOT check the contents of the array. Use
 	 * the array manipulations methods in this class instead.
-	 *
    * @see is_null()
 	 * @param mixed $vars,... Any number of objects to check
 	 * @return bool
@@ -35,7 +33,6 @@ class Preconditions {
 
   /**
    * Checks if the given object is any of the given values.
-   *
    * @param $obj
    * @param array $values
    * @return bool
@@ -52,11 +49,10 @@ class Preconditions {
 	// String manipulations
   /**
    * Checks if a given string is null, empty, or just whitespace.
-   *
-   * @param string $str
+   * @param null|string $str
    * @return bool
    */
-  public static function isNullEmptyOrWhitespace($str): bool {
+  public static function isNullEmptyOrWhitespace(?string $str): bool {
     return self::isNull($str) || strlen(preg_replace('[^\S]', '', $str)) == 0;
   }
 

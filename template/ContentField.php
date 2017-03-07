@@ -1,5 +1,6 @@
 <?php
 namespace me\fru1t\common\template;
+use me\fru1t\common\language\Preconditions;
 
 /**
  * ContentFields are the values that fit into TemplateField locations within a template.
@@ -7,7 +8,6 @@ namespace me\fru1t\common\template;
 class ContentField {
 	/**
 	 * Creates a ContentField given a TemplateField.
-	 *
 	 * @param TemplateField $templateField
 	 * @return ContentField
 	 */
@@ -15,21 +15,23 @@ class ContentField {
 		return new ContentField($templateField);
 	}
 
-	/** @type TemplateField */
+	/** @var TemplateField */
 	private $templateField;
-	/** @type string */
+	/** @var string */
 	private $content;
+  /** @var bool */
+  private $hasContentBeenSet;
 
   /**
    * Creates a new ContentField given a TemplateField and optionally, content. Consider using
    * {@link ContentField::of(TemplateField)} for stylistic purposes.
-   *
    * @param TemplateField $templateField
    * @param string|null $content (optional)
    */
-	public function __construct(TemplateField $templateField, string $content = null) {
+	public function __construct(TemplateField $templateField, ?string $content = null) {
 		$this->templateField = $templateField;
 		$this->content = $content;
+    $this->hasContentBeenSet = false;
 	}
 
 	/**
@@ -42,29 +44,27 @@ class ContentField {
 	/**
    * Returns the value of this ContentField, or the default value of the TemplateField if no content
    * was given.
-	 *
-	 * @return string
+	 * @return null|string
 	 */
-	public function getContent(): string {
+	public function getContent(): ?string {
 		return ($this->hasContent()) ? $this->content : $this->templateField->getDefaultValue();
 	}
 
 	/**
 	 * Sets the value to be retrieved from the ContentField.
-	 *
-	 * @param string $content
+	 * @param null|string $content
 	 */
-	public function setContent(string $content = null) {
+	public function setContent(?string $content = null): void {
 		$this->content = $content;
+    $this->hasContentBeenSet = true;
 	}
 
 	/**
-	 * Returns if content exists within this field.
-	 *
+	 * Returns if content exists beyond the default value.
 	 * @return bool
 	 */
 	public function hasContent(): bool {
-		return !is_null($this->content) && $this->content != "";
+    return $this->hasContentBeenSet;
 	}
 
 	public function __toString() {
