@@ -11,7 +11,7 @@ class ReturnContext {
   /** @var null|string */
   private $message;
 
-  public function __construct(bool $didSucceed, ?string $message) {
+  public function __construct(bool $didSucceed, ?string $message = null) {
     $this->didSucceed = $didSucceed;
     $this->message = $message;
   }
