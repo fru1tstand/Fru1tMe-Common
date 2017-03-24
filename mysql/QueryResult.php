@@ -80,4 +80,21 @@ class QueryResult {
 
 		return $result->fetch_assoc();
 	}
+
+  /**
+   * Checks if the query successfully ran and closes the statement.
+   * @return bool
+   */
+	public function didSucceed(): bool {
+	  $result = ($this->stmt->errno == 0);
+	  $this->stmt->close();
+	  return $result;
+  }
+
+  /**
+   * Closes the statement for next execution.
+   */
+  public function close(): void {
+	  $this->stmt->close();
+  }
 }
