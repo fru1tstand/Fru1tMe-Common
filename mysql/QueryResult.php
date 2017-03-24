@@ -13,16 +13,27 @@ class QueryResult {
 		$this->stmt = $stmt;
 	}
 
-	/**
-	 * Returns whether or not the statement had more than 0 affected rows and closes
-	 * the statement.
-	 * @return bool
-	 */
+  /**
+   * Returns whether or not the statement had 1 or more affected rows and closes the statement.
+   * @return bool
+   */
 	public function didAffectRows(): bool {
-		$res = $this->stmt->affected_rows > 0;
-		$this->stmt->close();
-		return $res;
+	  $affectedRows = $this->stmt->affected_rows;
+	  $this->stmt->close();
+    return ($affectedRows > 0);
 	}
+
+  /**
+   * Returns whether or not the statement had a specific number of affected rows and closes the
+   * statement.
+   * @param int $rows
+   * @return bool
+   */
+	public function didAffectExactlyNRows(int $rows): bool {
+	  $affectedRows = $this->stmt->affected_rows;
+	  $this->stmt->close();
+	  return ($affectedRows == $rows);
+  }
 
 	/**
 	 * Invokes the given callable, passing a single row as the sole parameter. Iterates through all

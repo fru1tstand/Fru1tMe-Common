@@ -63,7 +63,7 @@ class QueryBuilder {
    * @param string $s
    * @return QueryBuilder
    */
-	public function withStringParam(string $s): self {
+	public function withStringParam(?string $s): self {
 	  return $this->withParam($s, self::PARAM_TYPE_STRING);
   }
 
@@ -72,7 +72,7 @@ class QueryBuilder {
    * @param int $i
    * @return QueryBuilder
    */
-  public function withIntParam(int $i): self {
+  public function withIntParam(?int $i): self {
 	  return $this->withParam($i, self::PARAM_TYPE_INT);
   }
 
@@ -82,7 +82,7 @@ class QueryBuilder {
    * @param float $d
    * @return QueryBuilder
    */
-  public function withDoubleParam(double $d): self {
+  public function withDoubleParam(?double $d): self {
     return $this->withParam($d, self::PARAM_TYPE_DOUBLE);
   }
 
@@ -91,7 +91,7 @@ class QueryBuilder {
    * @param string $s
    * @return QueryBuilder
    */
-  public function withBlobParam(string $s): self {
+  public function withBlobParam(?string $s): self {
     return $this->withParam($s, self::PARAM_TYPE_BLOB);
   }
 
