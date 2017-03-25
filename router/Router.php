@@ -7,8 +7,20 @@ use RuntimeException;
 
 /**
  * <p>Handles URL routing. This router depends on a central routing file (usually index.php in the
- * website's root), that all requests will go through. See readme for a more comprehensive
- * explanation.
+ * website's root), that all requests will go through. Routing has 4 phases:
+ * <ol>
+ *  <li>Setup (Router::setup()...->map(...)->...): This portion sets up both static (routing using
+ *      Route objects) and dynamic (routing via content directory) routing.</li>
+ *  <li>Static Routing (...->complete()): This attempts to match a static route to the url. If a
+ *      match is found, the mapped file is provided and script execution stops here. Otherwise,
+ *      we move on.</li>
+ *  <li>External Setup: The dev can use this space between static and dynamic routing to set up any
+ *      further plugins they wish. For example, I use this to set up the Template engine as I never
+ *      statically route Template engine-using files.</li>
+ *  <li>Dynamic Routing (Router::route()): Finally, the dynamic routing takes place utilizing the
+ *      content directory to match with the url what file the user requested. If none is found, the
+ *      request is forwarded to the error page silently (without redirecting).
+ * </ol>
  */
 final class Router {
   /**
@@ -166,16 +178,12 @@ final class Router {
    * @return Router
    */
   public function map(Route $route): Router {
-    if (!$route->isBuilt()) {
-      throw new RuntimeException("The route mapping '{$route->getRequest()}' to "
-          . "'{$route->getResolve()}' was never built.");
-    }
     $this->routes[] = $route;
     return $this;
   }
 
   /**
-   * Validate and completes setup. Also triggers static
+   * Validate, completes, and executes static routing.
    */
   public function complete() {
     if (Preconditions::isNullEmptyOrWhitespace($this->contentDir)
@@ -194,14 +202,17 @@ final class Router {
           . $this->contentDir . $this->defaultContentPagePath);
     }
 
+    self::$router = $this;
+
     // Get requested page.
     self::$rawRequestedPage = Param::fetchGet($this->pageParameterName);
 
-    // Check static map.
+    // Check map for static matches
     foreach ($this->routes as $route) {
-      $route->navigate(self::$rawRequestedPage);
+      if ($route->execute(self::$rawRequestedPage)) {
+        // Found a match, stop the press! We're done!
+        exit(0);
+      }
     }
-
-    self::$router = $this;
   }
 }
