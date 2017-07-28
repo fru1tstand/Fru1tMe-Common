@@ -7,8 +7,6 @@ namespace me\fru1t\common\router\route;
 class FileRoute extends StaticRoute {
   /** @var string */
   private $responsePath;
-  /** @var string */
-  private $requestUrl;
   /** @var bool */
   private $isCaseSensitive;
 

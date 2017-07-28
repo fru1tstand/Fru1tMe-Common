@@ -44,7 +44,7 @@ class Param {
 	 * @param string $getParameterName
 	 * @return string | null
 	 */
-	public static function fetchGet(string $getParameterName) {
+	public static function fetchGet(string $getParameterName): ?string {
 		return self::fetch($getParameterName, $_GET);
 	}
 
@@ -54,7 +54,7 @@ class Param {
 	 * @param string $paramName
 	 * @return string | null
 	 */
-	public static function fetchPost(string $paramName) {
+	public static function fetchPost(string $paramName): ?string {
 		return self::fetch($paramName, $_POST);
 	}
 
@@ -63,7 +63,7 @@ class Param {
 	 * @param array $paramArray
 	 * @return string | null
 	 */
-	private static function fetch(string $paramName, array $paramArray) {
+	private static function fetch(string $paramName, array $paramArray): ?string {
 		if (isset($paramArray[$paramName])) {
 			return $paramArray[$paramName];
 		}

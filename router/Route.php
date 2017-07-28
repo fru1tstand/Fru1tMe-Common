@@ -31,7 +31,11 @@ abstract class Route {
    * @param string $url
    * @return bool Whether or not this route matched the url.
    */
-  public function execute(string $url): bool {
+  public function execute(?string $url): bool {
+  	if ($url == null) {
+  		return false;
+	}
+
     if ($this->matches($url)) {
       foreach ($this->headers as $header) {
         if (!Preconditions::isNullEmptyOrWhitespace($header)) {
